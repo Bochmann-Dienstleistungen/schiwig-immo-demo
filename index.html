@@ -143,8 +143,8 @@ nav{
 .hbc{
   border-radius:18px;overflow:hidden;position:relative;
   background:#0c1a36;
-  opacity:0;
-  will-change:transform,opacity;
+  clip-path:inset(100% 0% 0% 0% round 18px);
+  will-change:clip-path,transform;
 }
 /* Portrait — tall, col 1, rows 1+2 */
 .hbc-portrait{grid-column:1;grid-row:1/span 2}
@@ -1784,13 +1784,16 @@ function initPage() {
 
   // ── HERO BENTO REVEAL ────────────────
   const heroCds = document.querySelectorAll('.hbc');
-  gsap.set(heroCds, { opacity: 0, scale: 0.82, y: 36, rotationX: 6 });
+  // Cards start clipped from top (rising reveal per card)
+  gsap.set(heroCds, { clipPath: 'inset(100% 0% 0% 0% round 18px)', scale: 0.94 });
   gsap.to(heroCds, {
-    opacity: 1, scale: 1, y: 0, rotationX: 0,
-    duration: 1.05, ease: 'power4.out',
-    stagger: { each: 0.11, from: 'start' },
-    delay: 0.2,
-    clearProps: 'scale,y,rotationX'
+    clipPath: 'inset(0% 0% 0% 0% round 18px)',
+    scale: 1,
+    duration: 0.88,
+    ease: 'power4.out',
+    stagger: { each: 0.1, from: 'start' },
+    delay: 0.18,
+    onComplete() { gsap.set(heroCds, { clearProps: 'clipPath,scale' }); }
   });
 
   // ── PORTFOLIO CAROUSEL ────────────────
