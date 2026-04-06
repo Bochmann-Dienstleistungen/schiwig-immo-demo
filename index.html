@@ -15,17 +15,17 @@
 <style>
 /* ── ROOT ─────────────────────────────────── */
 :root{
-  --bg:#050810;--bg2:#080c18;--bg3:#0d1120;
-  --glass:rgba(255,255,255,.04);
-  --glass-b:rgba(255,255,255,.09);--glass-top:rgba(255,255,255,.18);
-  --gold:#c9a227;--gold2:#e8c55a;--gold3:#f5d876;
-  --gold-glow:rgba(201,162,39,.22);
-  --white:#ffffff;--muted:rgba(255,255,255,.45);--faint:rgba(255,255,255,.06);
-  --line:rgba(255,255,255,.07);--r:18px;
+  --bg:#0e0c09;--bg2:#141109;--bg3:#1b160f;
+  --glass:rgba(255,248,230,.05);
+  --glass-b:rgba(255,248,230,.08);--glass-top:rgba(255,248,230,.14);
+  --gold:#b8966e;--gold2:#cdb08a;--gold3:#dfc9a8;
+  --gold-glow:rgba(184,150,110,.18);
+  --white:#f2e8d8;--muted:rgba(242,232,216,.42);--faint:rgba(242,232,216,.04);
+  --line:rgba(242,232,216,.07);--r:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:auto}
-body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;line-height:1.6;cursor:none;overflow-x:hidden}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
 .page-wrap{overflow-x:hidden;position:relative}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%;height:auto}
@@ -33,7 +33,7 @@ section{position:relative}
 
 /* ── LOADER ───────────────────────────────── */
 #loader{
-  position:fixed;inset:0;z-index:9999;background:#050810;
+  position:fixed;inset:0;z-index:9999;background:#0e0c09;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;
 }
 .loader-logo{
@@ -61,17 +61,6 @@ section{position:relative}
   transform-origin:left;transform:scaleX(0);
 }
 
-/* ── CUSTOM CURSOR ───────────────────────── */
-.cur-ring{
-  position:fixed;top:0;left:0;width:38px;height:38px;border-radius:50%;
-  border:1.5px solid rgba(201,162,39,.5);pointer-events:none;z-index:9998;
-  will-change:transform;
-}
-.cur-dot{
-  position:fixed;top:0;left:0;width:5px;height:5px;border-radius:50%;
-  background:var(--gold);pointer-events:none;z-index:9999;will-change:transform;
-}
-@media(max-width:768px){.cur-ring,.cur-dot{display:none}body{cursor:auto}}
 
 /* ── LIQUID GLASS ─────────────────────────── */
 .glass{
@@ -90,9 +79,9 @@ section{position:relative}
 /* ── ORBS ──────────────────────────────────── */
 .orbs{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .orb{position:absolute;border-radius:50%;filter:blur(90px)}
-.orb-gold{width:700px;height:700px;background:radial-gradient(circle,rgba(201,162,39,.14),transparent 65%)}
-.orb-blue{width:500px;height:500px;background:radial-gradient(circle,rgba(30,60,200,.14),transparent 65%)}
-.orb-rose{width:380px;height:380px;background:radial-gradient(circle,rgba(180,60,120,.08),transparent 65%)}
+.orb-gold{width:700px;height:700px;background:radial-gradient(circle,rgba(184,150,110,.1),transparent 65%)}
+.orb-blue{width:500px;height:500px;background:radial-gradient(circle,rgba(130,80,40,.08),transparent 65%)}
+.orb-rose{width:380px;height:380px;background:radial-gradient(circle,rgba(140,70,60,.06),transparent 65%)}
 @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(60px,-40px) scale(1.08)}66%{transform:translate(-30px,50px) scale(.95)}}
 @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-50px,60px) scale(1.06)}66%{transform:translate(40px,-30px) scale(.97)}}
 @keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,40px) scale(1.1)}}
@@ -144,7 +133,7 @@ nav{
 }
 .hseq-overlay{
   position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(105deg,rgba(5,8,16,.8) 0%,rgba(5,8,16,.42) 52%,rgba(5,8,16,.12) 100%);
+  background:linear-gradient(105deg,rgba(14,12,9,.82) 0%,rgba(14,12,9,.44) 52%,rgba(14,12,9,.1) 100%);
 }
 .hseq-content{
   position:absolute;inset:0;z-index:2;
@@ -598,10 +587,6 @@ footer{
 
 <!-- SCROLL PROGRESS -->
 <div id="progress"></div>
-
-<!-- CUSTOM CURSOR -->
-<div class="cur-ring" id="curRing"></div>
-<div class="cur-dot" id="curDot"></div>
 
 <!-- NAV -->
 <nav class="glass" id="mainNav">
@@ -1351,9 +1336,9 @@ function initPage() {
     drawCover(frameImgs[ia], 1);
     if (t > 0.01) drawCover(frameImgs[ib], t);
 
-    // Atmospheric dark vignette
-    hctx.globalAlpha = 0.32;
-    hctx.fillStyle = '#050810';
+    // Warm atmospheric vignette
+    hctx.globalAlpha = 0.28;
+    hctx.fillStyle = '#0e0c09';
     hctx.fillRect(0, 0, heroCanvas.width, heroCanvas.height);
     hctx.globalAlpha = 1;
   }
@@ -1370,20 +1355,18 @@ function initPage() {
     const s = SCENES[idx];
     hseqNum.textContent = String(idx + 1).padStart(2,'0') + ' / 0' + SCENES.length;
 
-    gsap.timeline()
-      .to([l1El, l2El], { opacity: 0, y: -18, duration: 0.28, ease: 'power2.in', stagger: 0.04 })
-      .to(subEl,  { opacity: 0, duration: 0.2 }, '<')
+    gsap.timeline({ defaults: { ease: 'power2.inOut' } })
+      .to([l1El, l2El, subEl], { opacity: 0, y: -12, duration: 0.45, stagger: 0.06 })
       .call(() => {
         l1El.textContent = s.l1;
         l2El.textContent = s.l2;
         subEl.innerHTML  = s.sub.replace('\n','<br>');
       })
-      .fromTo(l1El, { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' })
-      .fromTo(l2El, { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, '-=0.5')
-      .fromTo(subEl,{ opacity: 0 },         { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4')
-      .to(eyeEl,   { opacity: s.eye   ? 1 : 0, duration: 0.3 }, '<')
-      .to(btnsEl,  { opacity: s.btns  ? 1 : 0, y: s.btns  ? 0 : 8, duration: 0.3 }, '<')
-      .to(statsEl, { opacity: s.stats ? 1 : 0, y: s.stats ? 0 : 8, duration: 0.3 }, '<');
+      .fromTo([l1El, l2El], { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.1 })
+      .fromTo(subEl, { opacity: 0, y: 10 },         { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.55')
+      .to(eyeEl,   { opacity: s.eye   ? 1 : 0, duration: 0.5 }, '-=0.5')
+      .to(btnsEl,  { opacity: s.btns  ? 1 : 0, y: s.btns  ? 0 : 6, duration: 0.5 }, '<0.1')
+      .to(statsEl, { opacity: s.stats ? 1 : 0, y: s.stats ? 0 : 6, duration: 0.5 }, '<0.1');
   }
 
   // Initial entrance animation (split chars)
@@ -1399,12 +1382,12 @@ function initPage() {
   splitCharsEl(l2El);
 
   gsap.set([eyeEl, subEl, btnsEl, statsEl, '#heroScroll'], { opacity: 0 });
-  gsap.from('.wd', { y: '110%', rotateZ: 3, stagger: 0.025, duration: 1.1, ease: 'power4.out', delay: 0.4 });
-  gsap.to(eyeEl,   { opacity: 1, y: 0, duration: 0.7, delay: 0.8, ease: 'power3.out' });
-  gsap.to(subEl,   { opacity: 1, y: 0, duration: 0.7, delay: 1.0, ease: 'power3.out' });
-  gsap.to(btnsEl,  { opacity: 1, y: 0, duration: 0.7, delay: 1.2, ease: 'power3.out' });
-  gsap.to(statsEl, { opacity: 1, y: 0, duration: 0.7, delay: 1.4, ease: 'power3.out' });
-  gsap.to('#heroScroll', { opacity: 1, duration: 0.6, delay: 2.0, ease: 'power2.out' });
+  gsap.from('.wd', { y: '105%', rotateZ: 2, stagger: 0.03, duration: 1.4, ease: 'expo.out', delay: 0.5 });
+  gsap.to(eyeEl,   { opacity: 1, y: 0, duration: 1.0, delay: 0.9,  ease: 'expo.out' });
+  gsap.to(subEl,   { opacity: 1, y: 0, duration: 1.0, delay: 1.15, ease: 'expo.out' });
+  gsap.to(btnsEl,  { opacity: 1, y: 0, duration: 0.9, delay: 1.4,  ease: 'expo.out' });
+  gsap.to(statsEl, { opacity: 1, y: 0, duration: 0.9, delay: 1.6,  ease: 'expo.out' });
+  gsap.to('#heroScroll', { opacity: 1, duration: 0.8, delay: 2.2, ease: 'power2.out' });
   curScene = 0;
 
   // ScrollTrigger — pin + image sequence scrub
@@ -1413,7 +1396,7 @@ function initPage() {
     start: 'top top',
     end: '+=500%',
     pin: true,
-    scrub: 0.5,
+    scrub: 2,
     onUpdate(self) {
       renderFrame(self.progress);
       hseqProg.style.width = (self.progress * 100) + '%';
@@ -1448,7 +1431,7 @@ function initPage() {
 
     function goTo(idx) {
       cur = Math.max(0, Math.min(idx, cards.length - 1));
-      gsap.to(carTrack, { x: -(cur * cardW()), duration: 0.7, ease: 'power3.out' });
+      gsap.to(carTrack, { x: -(cur * cardW()), duration: 0.9, ease: 'expo.out' });
       updateDots();
     }
 
@@ -1485,17 +1468,15 @@ function initPage() {
 
   // ── SCROLL REVEALS (.rv) ──────────────
   ScrollTrigger.batch('.rv', {
-    interval: 0.1,
-    batchMax: 4,
+    interval: 0.12,
+    batchMax: 3,
     onEnter: els =>
       gsap.from(els, {
-        opacity: 0,
-        y: 52,
-        duration: 1,
-        ease: 'power3.out',
-        stagger: 0.1
+        opacity: 0, y: 36,
+        duration: 1.2, ease: 'expo.out',
+        stagger: 0.12
       }),
-    start: 'top 88%'
+    start: 'top 90%'
   });
 
   // ── COUNTERS ──────────────────────────
@@ -1522,7 +1503,7 @@ function initPage() {
         trigger: section,
         start: 'top top',
         end: () => '+=' + (track.scrollWidth - window.innerWidth + 112),
-        scrub: 1,
+        scrub: 2,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true
@@ -1557,27 +1538,11 @@ function initPage() {
       const y = self.scroll();
       gsap.to('#mainNav', {
         y: y > lastY && y > 120 ? -90 : 0,
-        duration: 0.45,
-        ease: 'power2.out'
+        duration: 0.7,
+        ease: 'expo.out'
       });
       lastY = y;
     }
-  });
-
-  // ── CUSTOM CURSOR (desktop only) ───────
-  gsap.matchMedia().add('(min-width: 769px)', () => {
-    const ring = document.getElementById('curRing');
-    const dot  = document.getElementById('curDot');
-
-    window.addEventListener('mousemove', e => {
-      gsap.to(ring, { x: e.clientX - 19, y: e.clientY - 19, duration: 0.5, ease: 'power2.out' });
-      gsap.to(dot,  { x: e.clientX - 2.5, y: e.clientY - 2.5, duration: 0.08 });
-    });
-
-    document.querySelectorAll('a, button, .leis-card, .listing-card, .warum-card, .testi-card').forEach(el => {
-      el.addEventListener('mouseenter', () => gsap.to(ring, { scale: 2.2, duration: 0.3, borderColor: 'rgba(201,162,39,.9)' }));
-      el.addEventListener('mouseleave', () => gsap.to(ring, { scale: 1, duration: 0.3, borderColor: 'rgba(201,162,39,.5)' }));
-    });
   });
 
   // ── MAGNETIC BUTTONS (desktop only) ───
@@ -1587,16 +1552,13 @@ function initPage() {
         const r = btn.getBoundingClientRect();
         const x = e.clientX - r.left - r.width / 2;
         const y = e.clientY - r.top - r.height / 2;
-        gsap.to(btn, { x: x * 0.24, y: y * 0.24, duration: 0.35, ease: 'power2.out' });
+        gsap.to(btn, { x: x * 0.16, y: y * 0.16, duration: 0.5, ease: 'power2.out' });
       });
       btn.addEventListener('mouseleave', () => {
-        gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' });
+        gsap.to(btn, { x: 0, y: 0, duration: 1.0, ease: 'elastic.out(1, 0.5)' });
       });
     });
   });
-
-  // ── HERO VISUAL: zoom on load ──────────
-  gsap.from('#heroImg', { scale: 1.12, duration: 2.2, ease: 'power3.out', delay: 0.2 });
 
   // Refresh after images load
   window.addEventListener('load', () => ScrollTrigger.refresh());
