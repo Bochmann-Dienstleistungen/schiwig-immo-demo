@@ -135,58 +135,68 @@ nav{
 }
 .nav-mob a:hover{color:var(--gold)}
 
-/* ── HERO ─────────────────────────────────── */
-.hero{
-  position:relative;min-height:100vh;
-  display:grid;grid-template-columns:52% 48%;
-  background:#050810;overflow:hidden;
+/* ── HERO IMAGE SEQUENCE ──────────────────── */
+.hero-seq{
+  position:relative;height:100vh;overflow:hidden;background:#050810;
 }
-.hero-left{
-  position:relative;z-index:2;
-  padding:160px 64px 80px 80px;
+#heroCanvas{
+  position:absolute;inset:0;width:100%;height:100%;display:block;
+}
+.hseq-overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,rgba(5,8,16,.8) 0%,rgba(5,8,16,.42) 52%,rgba(5,8,16,.12) 100%);
+}
+.hseq-content{
+  position:absolute;inset:0;z-index:2;
   display:flex;flex-direction:column;justify-content:center;
+  padding:0 80px;pointer-events:none;
 }
-.hero-right{position:relative;overflow:hidden}
-.hero-portrait{
-  width:100%;height:100%;object-fit:cover;object-position:center 15%;
-  will-change:transform;
-}
-.hero-portrait-grad{
-  position:absolute;inset:0;
-  background:linear-gradient(90deg,#050810 0%,rgba(5,8,16,.55) 35%,transparent 60%);
-}
-.hero-portrait-vignette{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(5,8,16,.65) 0%,transparent 45%);
-}
-.hero-portrait-badge{
-  position:absolute;bottom:36px;right:32px;
-  padding:18px 24px;border-radius:16px;
-}
-.hpb-stars{color:var(--gold);font-size:.8rem;letter-spacing:3px;margin-bottom:4px}
-.hpb-text{font-size:.82rem;font-weight:600;color:var(--white)}
-.hpb-sub{font-size:.64rem;color:var(--muted);margin-top:2px;font-weight:300}
-.hero-eyebrow{
+.hseq-eyebrow{
   display:inline-flex;align-items:center;gap:14px;margin-bottom:24px;
-  font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);font-weight:500;
-  opacity:0;
+  font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;
+  color:var(--gold);font-weight:500;
 }
-.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--gold)}
-.hero-h1{
+.hseq-eyebrow::before{content:'';width:28px;height:1px;background:var(--gold)}
+.hseq-h1{
   font-family:'Cormorant Garamond',serif;
-  font-size:clamp(4.2rem,8.5vw,8rem);line-height:.98;font-weight:300;
-  letter-spacing:-.03em;margin-bottom:32px;color:var(--white);
+  font-size:clamp(4.5rem,10.5vw,10rem);line-height:.92;font-weight:300;
+  letter-spacing:-.03em;margin-bottom:32px;
 }
-.hero-h1 em{font-style:italic;color:var(--gold);display:block}
-.hero-h1 strong{font-weight:600;display:block}
-/* SplitText wrappers */
-.hero-h1 .char-wrap{overflow:hidden;display:inline-block;vertical-align:bottom}
-.hero-h1 .char{display:inline-block;will-change:transform}
-.hero-sub{
-  font-size:.95rem;line-height:1.95;color:var(--muted);
-  margin-bottom:44px;max-width:420px;font-weight:300;opacity:0;
+.hseq-l1{display:block;font-style:italic;color:var(--gold)}
+.hseq-l2{display:block;font-weight:600;color:var(--white)}
+.hseq-sub{
+  font-size:1rem;color:var(--muted);max-width:440px;
+  line-height:2;font-weight:300;margin-bottom:44px;
 }
-.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px;opacity:0}
+.hseq-btns{display:flex;gap:14px;flex-wrap:wrap;pointer-events:all;margin-bottom:48px}
+.hseq-stats{display:flex;gap:0}
+.hseq-stat{padding:0 32px 0 0;border-right:1px solid var(--line)}
+.hseq-stat:first-child{padding-left:0}
+.hseq-stat:last-child{border-right:none;padding-right:0}
+/* Scene progress */
+.hseq-prog-wrap{
+  position:absolute;bottom:44px;left:80px;z-index:3;
+  display:flex;align-items:center;gap:16px;
+}
+.hseq-prog-track{
+  width:110px;height:1px;background:rgba(255,255,255,.15);
+  position:relative;overflow:hidden;
+}
+.hseq-prog-fill{
+  position:absolute;inset:0;width:0%;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+  transition:width .15s linear;
+}
+.hseq-scene-num{font-size:.55rem;letter-spacing:.2em;color:rgba(255,255,255,.3)}
+/* Scroll hint */
+.hseq-scroll{
+  position:absolute;bottom:40px;right:80px;z-index:3;
+  display:flex;align-items:center;gap:12px;
+  font-size:.55rem;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
+}
+/* Shared button styles */
+.hseq-btns .btn-gold,
+.hero-btns .btn-gold,
 .btn-gold{
   position:relative;display:inline-flex;align-items:center;gap:10px;
   padding:16px 32px;background:var(--gold);color:var(--bg);
@@ -207,17 +217,8 @@ nav{
   letter-spacing:.1em;text-transform:uppercase;border-radius:60px;transition:all .3s;
 }
 .btn-outline:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.05)}
-.hero-stats{display:flex;gap:0;opacity:0}
-.hero-stat{padding:0 32px 0 0;border-right:1px solid var(--line)}
-.hero-stat:first-child{padding-left:0}
-.hero-stat:last-child{border-right:none}
 .hstat-n{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:600;color:var(--gold);line-height:1;display:block}
 .hstat-l{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px;display:block;font-weight:400}
-.hero-scroll{
-  position:absolute;bottom:36px;left:80px;z-index:2;
-  display:flex;align-items:center;gap:14px;
-  font-size:.57rem;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);opacity:0;
-}
 .scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--gold),transparent);animation:spulse 2.2s ease-in-out infinite}
 @keyframes spulse{0%,100%{opacity:.35}50%{opacity:1}}
 
@@ -554,14 +555,13 @@ footer{
   nav{padding:0 20px;width:calc(100% - 24px);top:10px}
   .nav-links,.nav-cta{display:none}
   .nav-ham{display:flex}
-  .hero{grid-template-columns:1fr;min-height:auto}
-  .hero-left{padding:120px 28px 60px;order:2}
-  .hero-right{order:1;height:55vw;min-height:240px}
-  .hero-portrait-grad{background:linear-gradient(to bottom,transparent 40%,#050810 100%)}
-  .hero-portrait-badge{display:none}
-  .hero-scroll{display:none}
-  .hero-stats{flex-wrap:wrap;gap:20px}
-  .hero-stat{border-right:none;padding:0}
+  .hero-seq{height:100svh}
+  .hseq-content{padding:0 28px}
+  .hseq-h1{font-size:clamp(3.2rem,14vw,5.5rem)}
+  .hseq-prog-wrap{left:28px;bottom:32px}
+  .hseq-scroll{right:28px;bottom:28px}
+  .hseq-stats{flex-wrap:wrap;gap:16px}
+  .hseq-stat{border-right:none;padding:0}
   .portfolio{padding:60px 0 48px}
   .portfolio-header{padding:0 24px;flex-direction:column;align-items:flex-start;gap:20px}
   .carousel-track{padding:0 24px 20px}
@@ -632,58 +632,43 @@ footer{
 
 <div class="page-wrap">
 
-  <!-- ═══ HERO ═══ -->
-  <section class="hero" id="hero">
-    <!-- Left: Content -->
-    <div class="hero-left">
-      <div class="orbs" style="z-index:0">
-        <div class="orb orb-gold o1" style="opacity:.7"></div>
-        <div class="orb orb-blue o2" style="opacity:.5"></div>
-      </div>
-      <div class="hero-eyebrow" id="heroEyebrow">
-        Immobilienmakler · Zwickau
-      </div>
-      <h1 class="hero-h1" id="heroH1"><em>Lukas</em><strong>Schiwig.</strong></h1>
-      <p class="hero-sub" id="heroSub">
-        Manche kennen Zwickau.<br>
-        Ich kenne die richtigen Menschen.
-      </p>
-      <div class="hero-btns" id="heroBtns">
+  <!-- ═══ HERO IMAGE SEQUENCE ═══ -->
+  <section class="hero-seq" id="hero">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hseq-overlay"></div>
+    <div class="hseq-content">
+      <div class="hseq-eyebrow" id="hseqEyebrow">Immobilienmakler · Zwickau</div>
+      <h1 class="hseq-h1">
+        <span class="hseq-l1" id="hseqL1">Lukas</span>
+        <span class="hseq-l2" id="hseqL2">Schiwig.</span>
+      </h1>
+      <p class="hseq-sub" id="hseqSub">Manche kennen Zwickau.<br>Ich kenne die richtigen Menschen.</p>
+      <div class="hseq-btns" id="heroBtns">
         <a href="#kontakt" class="btn-gold magnetic">Kostenlose Bewertung</a>
         <a href="#portfolio" class="btn-outline magnetic">Referenzen</a>
       </div>
-      <div class="hero-stats" id="heroStats">
-        <div class="hero-stat">
+      <div class="hseq-stats" id="heroStats">
+        <div class="hseq-stat">
           <span class="hstat-n">4,6<span style="font-size:1rem">★</span></span>
           <span class="hstat-l">Google Bewertung</span>
         </div>
-        <div class="hero-stat" style="padding-left:28px">
+        <div class="hseq-stat" style="padding-left:28px">
           <span class="hstat-n">37</span>
           <span class="hstat-l">Bewertungen</span>
         </div>
-        <div class="hero-stat" style="padding-left:28px">
+        <div class="hseq-stat" style="padding-left:28px">
           <span class="hstat-n">100<span style="font-size:1rem">%</span></span>
           <span class="hstat-l">Digital</span>
         </div>
       </div>
-      <div class="hero-scroll" id="heroScroll">
-        <div class="scroll-line"></div>
-        Scroll
-      </div>
     </div>
-
-    <!-- Right: Portrait -->
-    <div class="hero-right">
-      <img class="hero-portrait" id="heroImg"
-        src="https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=900"
-        alt="Lukas Schiwig – Immobilienmakler Zwickau">
-      <div class="hero-portrait-grad"></div>
-      <div class="hero-portrait-vignette"></div>
-      <div class="hero-portrait-badge glass">
-        <div class="hpb-stars">★★★★★</div>
-        <div class="hpb-text">Lukas Schiwig</div>
-        <div class="hpb-sub">Zwickau · Lichtentanne · Sachsen</div>
-      </div>
+    <div class="hseq-prog-wrap">
+      <div class="hseq-prog-track"><div class="hseq-prog-fill" id="hseqProg"></div></div>
+      <span class="hseq-scene-num" id="hseqNum">01 / 06</span>
+    </div>
+    <div class="hseq-scroll" id="heroScroll">
+      <div class="scroll-line"></div>
+      Scroll
     </div>
   </section>
 
@@ -1302,65 +1287,140 @@ function initPage() {
     prog.style.transform = 'scaleX(' + (window.scrollY / max) + ')';
   }, { passive: true });
 
-  // ── HERO ANIMATIONS ───────────────────
-  // Set initial states first
-  gsap.set(['#heroEyebrow','#heroSub','#heroBtns','#heroStats','#heroScroll'], { opacity: 0, y: 20 });
+  // ── HERO IMAGE SEQUENCE ───────────────
+  const heroCanvas = document.getElementById('heroCanvas');
+  const hctx       = heroCanvas.getContext('2d');
+  const hseqProg   = document.getElementById('hseqProg');
+  const hseqNum    = document.getElementById('hseqNum');
+  const l1El       = document.getElementById('hseqL1');
+  const l2El       = document.getElementById('hseqL2');
+  const subEl      = document.getElementById('hseqSub');
+  const eyeEl      = document.getElementById('hseqEyebrow');
+  const btnsEl     = document.getElementById('heroBtns');
+  const statsEl    = document.getElementById('heroStats');
 
-  gsap.from('#heroEyebrow', { opacity: 0, y: 20, duration: 0.8, delay: 0.1, ease: 'power3.out',
-    clearProps: 'all' });
+  const SCENES = [
+    { l1:'Lukas',      l2:'Schiwig.',    sub:'Manche kennen Zwickau.\nIch kenne die richtigen Menschen.', eye:true,  btns:true,  stats:true  },
+    { l1:'Ihr Zuhause.', l2:'',          sub:'Mein Auftrag.',                                              eye:false, btns:false, stats:false },
+    { l1:'Erstklassig',  l2:'vermarktet.',sub:'Professionelle Fotos. Maximale Reichweite.',                eye:false, btns:false, stats:false },
+    { l1:'Schnell.',     l2:'Persönlich.',sub:'Ø\u200911 Tage bis zur Schlüsselübergabe.',                 eye:false, btns:false, stats:false },
+    { l1:'Zwickau',      l2:'kennt mich.',sub:'4,6\u2605 · 37 Google-Bewertungen.',                       eye:false, btns:false, stats:false },
+    { l1:'Sprechen',     l2:'wir.',       sub:'Kostenlose Bewertung · Unverbindlich.',                     eye:false, btns:true,  stats:false }
+  ];
 
-  // SplitText on hero h1 — walk text nodes only (preserves <strong>/<em> tags)
-  const h1 = document.getElementById('heroH1');
-  function wrapTextNodes(el) {
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-    const nodes = [];
-    let n;
-    while ((n = walker.nextNode())) nodes.push(n);
-    nodes.forEach(node => {
-      const words = node.textContent.split(/(\s+)/);
-      const frag = document.createDocumentFragment();
-      words.forEach(w => {
-        if (/^\s+$/.test(w)) {
-          frag.appendChild(document.createTextNode(w));
-        } else if (w) {
-          const outer = document.createElement('span');
-          outer.style.cssText = 'display:inline-block;overflow:hidden;vertical-align:bottom';
-          const inner = document.createElement('span');
-          inner.className = 'wd';
-          inner.style.cssText = 'display:inline-block;will-change:transform';
-          inner.textContent = w;
-          outer.appendChild(inner);
-          frag.appendChild(outer);
-        }
-      });
-      node.parentNode.replaceChild(frag, node);
-    });
-  }
-  wrapTextNodes(h1);
-  gsap.from('.wd', {
-    y: '110%', rotateZ: 4, stagger: 0.045, duration: 1,
-    ease: 'power4.out', delay: 0.3
+  const FRAME_SRCS = [
+    'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  ];
+
+  const frameImgs = FRAME_SRCS.map(src => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = src;
+    return img;
   });
 
-  gsap.from('#heroSub',   { opacity: 0, y: 24, duration: 0.9, delay: 0.85, ease: 'power3.out', clearProps: 'all' });
-  gsap.from('#heroBtns',  { opacity: 0, y: 24, duration: 0.8, delay: 1.1,  ease: 'power3.out', clearProps: 'all' });
-  gsap.from('#heroStats', { opacity: 0, y: 20, duration: 0.8, delay: 1.35, ease: 'power3.out', clearProps: 'all' });
-  gsap.from('#heroScroll',{ opacity: 0,        duration: 0.8, delay: 1.9,  ease: 'power2.out', clearProps: 'all' });
+  function resizeCanvas() {
+    heroCanvas.width  = window.innerWidth;
+    heroCanvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-  // Hero portrait parallax
-  gsap.to('#heroImg', {
-    yPercent: -12,
-    ease: 'none',
-    scrollTrigger: {
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: true
+  function drawCover(img, alpha) {
+    if (!img || !img.complete || !img.naturalWidth) return;
+    const w = heroCanvas.width, h = heroCanvas.height;
+    const sc = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+    const dw = img.naturalWidth * sc, dh = img.naturalHeight * sc;
+    hctx.globalAlpha = alpha;
+    hctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  }
+
+  function renderFrame(progress) {
+    const n   = frameImgs.length;
+    const raw = Math.max(0, Math.min(progress, 0.9999)) * (n - 1);
+    const ia  = Math.floor(raw);
+    const ib  = Math.min(ia + 1, n - 1);
+    const t   = raw - ia;
+
+    hctx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+    drawCover(frameImgs[ia], 1);
+    if (t > 0.01) drawCover(frameImgs[ib], t);
+
+    // Atmospheric dark vignette
+    hctx.globalAlpha = 0.32;
+    hctx.fillStyle = '#050810';
+    hctx.fillRect(0, 0, heroCanvas.width, heroCanvas.height);
+    hctx.globalAlpha = 1;
+  }
+
+  // Draw first frame on load
+  frameImgs[0].onload = () => renderFrame(0);
+  if (frameImgs[0].complete) renderFrame(0);
+
+  // Scene text transitions
+  let curScene = -1;
+  function goScene(idx) {
+    if (idx === curScene) return;
+    curScene = idx;
+    const s = SCENES[idx];
+    hseqNum.textContent = String(idx + 1).padStart(2,'0') + ' / 0' + SCENES.length;
+
+    gsap.timeline()
+      .to([l1El, l2El], { opacity: 0, y: -18, duration: 0.28, ease: 'power2.in', stagger: 0.04 })
+      .to(subEl,  { opacity: 0, duration: 0.2 }, '<')
+      .call(() => {
+        l1El.textContent = s.l1;
+        l2El.textContent = s.l2;
+        subEl.innerHTML  = s.sub.replace('\n','<br>');
+      })
+      .fromTo(l1El, { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' })
+      .fromTo(l2El, { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, '-=0.5')
+      .fromTo(subEl,{ opacity: 0 },         { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.4')
+      .to(eyeEl,   { opacity: s.eye   ? 1 : 0, duration: 0.3 }, '<')
+      .to(btnsEl,  { opacity: s.btns  ? 1 : 0, y: s.btns  ? 0 : 8, duration: 0.3 }, '<')
+      .to(statsEl, { opacity: s.stats ? 1 : 0, y: s.stats ? 0 : 8, duration: 0.3 }, '<');
+  }
+
+  // Initial entrance animation (split chars)
+  function splitCharsEl(el) {
+    const txt = el.textContent;
+    el.innerHTML = [...txt].map(c =>
+      c === ' ' ? '&nbsp;' :
+      `<span style="display:inline-block;overflow:hidden;vertical-align:bottom">` +
+      `<span class="wd" style="display:inline-block">${c}</span></span>`
+    ).join('');
+  }
+  splitCharsEl(l1El);
+  splitCharsEl(l2El);
+
+  gsap.set([eyeEl, subEl, btnsEl, statsEl, '#heroScroll'], { opacity: 0 });
+  gsap.from('.wd', { y: '110%', rotateZ: 3, stagger: 0.025, duration: 1.1, ease: 'power4.out', delay: 0.4 });
+  gsap.to(eyeEl,   { opacity: 1, y: 0, duration: 0.7, delay: 0.8, ease: 'power3.out' });
+  gsap.to(subEl,   { opacity: 1, y: 0, duration: 0.7, delay: 1.0, ease: 'power3.out' });
+  gsap.to(btnsEl,  { opacity: 1, y: 0, duration: 0.7, delay: 1.2, ease: 'power3.out' });
+  gsap.to(statsEl, { opacity: 1, y: 0, duration: 0.7, delay: 1.4, ease: 'power3.out' });
+  gsap.to('#heroScroll', { opacity: 1, duration: 0.6, delay: 2.0, ease: 'power2.out' });
+  curScene = 0;
+
+  // ScrollTrigger — pin + image sequence scrub
+  ScrollTrigger.create({
+    trigger: '#hero',
+    start: 'top top',
+    end: '+=500%',
+    pin: true,
+    scrub: 0.5,
+    onUpdate(self) {
+      renderFrame(self.progress);
+      hseqProg.style.width = (self.progress * 100) + '%';
+      const idx = Math.min(Math.floor(self.progress * SCENES.length), SCENES.length - 1);
+      goScene(idx);
     }
   });
-
-  // Hero portrait entrance
-  gsap.from('#heroImg', { scale: 1.1, duration: 2.0, ease: 'power3.out', delay: 0.1 });
 
   // ── PORTFOLIO CAROUSEL ────────────────
   const carTrack  = document.getElementById('carTrack');
