@@ -143,8 +143,7 @@ nav{
 .hbc{
   border-radius:18px;overflow:hidden;position:relative;
   background:#0c1a36;
-  clip-path:inset(100% 0% 0% 0% round 18px);
-  will-change:clip-path,transform;
+  will-change:clip-path,transform,opacity;
 }
 /* Portrait — tall, col 1, rows 1+2 */
 .hbc-portrait{grid-column:1;grid-row:1/span 2}
@@ -1782,18 +1781,33 @@ function initPage() {
     prog.style.transform = 'scaleX(' + (window.scrollY / max) + ')';
   }, { passive: true });
 
-  // ── HERO BENTO REVEAL ────────────────
-  const heroCds = document.querySelectorAll('.hbc');
-  // Cards start clipped from top (rising reveal per card)
-  gsap.set(heroCds, { clipPath: 'inset(100% 0% 0% 0% round 18px)', scale: 0.94 });
-  gsap.to(heroCds, {
-    clipPath: 'inset(0% 0% 0% 0% round 18px)',
-    scale: 1,
-    duration: 0.88,
-    ease: 'power4.out',
-    stagger: { each: 0.1, from: 'start' },
-    delay: 0.18,
-    onComplete() { gsap.set(heroCds, { clearProps: 'clipPath,scale' }); }
+  // ── HERO BENTO REVEAL — scroll-pinned, card by card ────────────────
+  const heroCds = Array.from(document.querySelectorAll('.hbc'));
+  const heroSection = document.querySelector('.hero-bento');
+
+  // All cards start hidden
+  gsap.set(heroCds, { clipPath: 'inset(8% 8% 8% 8% round 18px)', scale: 0.82, opacity: 0 });
+
+  // Build a pinned timeline: 6 cards × 130px scroll each = 780px total pin
+  const heroTL = gsap.timeline({
+    scrollTrigger: {
+      trigger: heroSection,
+      start: 'top top',
+      end: '+=780',
+      pin: true,
+      scrub: 0.8,
+      anticipatePin: 1,
+    }
+  });
+
+  heroCds.forEach((card, i) => {
+    heroTL.to(card, {
+      clipPath: 'inset(0% 0% 0% 0% round 18px)',
+      scale: 1,
+      opacity: 1,
+      duration: 0.22,
+      ease: 'power2.out',
+    }, i * 0.14);
   });
 
   // ── PORTFOLIO CAROUSEL ────────────────
