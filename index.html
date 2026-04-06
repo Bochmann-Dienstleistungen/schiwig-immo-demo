@@ -1126,53 +1126,49 @@ function initPage() {
   }, { passive: true });
 
   // ── HERO ANIMATIONS ───────────────────
-  const eyebrow = document.getElementById('heroEyebrow');
-  gsap.to(eyebrow, { opacity: 1, y: 0, duration: 0.8, delay: 0.1, ease: 'power3.out',
-    from: { opacity: 0, y: 20 } });
-  gsap.from(eyebrow, { opacity: 0, y: 20, duration: 0.8, delay: 0.1, ease: 'power3.out' });
+  // Set initial states first
+  gsap.set(['#heroEyebrow','#heroSub','#heroBtns','#heroStats','#heroScroll'], { opacity: 0, y: 20 });
 
-  // SplitText on hero h1
-  function splitChars(el) {
-    el.innerHTML = [...el.textContent].map(c =>
-      c === ' ' ? ' ' :
-      `<span style="display:inline-block;overflow:hidden;vertical-align:bottom">` +
-      `<span class="ch" style="display:inline-block;will-change:transform">${c}</span></span>`
-    ).join('');
-  }
+  gsap.from('#heroEyebrow', { opacity: 0, y: 20, duration: 0.8, delay: 0.1, ease: 'power3.out',
+    clearProps: 'all' });
+
+  // SplitText on hero h1 — walk text nodes only (preserves <strong>/<em> tags)
   const h1 = document.getElementById('heroH1');
-  // Preserve inner HTML tags — split the text nodes only approach:
-  // Simpler: wrap the full text in visible split spans
-  // Actually let's use word splitting to keep <strong>/<em> intact
-  function splitWords(el) {
-    const html = el.innerHTML;
-    // wrap each word in a span while keeping tags
-    el.innerHTML = html.replace(/([^\s<>]+)/g, (m, w) =>
-      `<span style="display:inline-block;overflow:hidden;vertical-align:bottom">` +
-      `<span class="wd" style="display:inline-block">${w}</span></span>`
-    );
+  function wrapTextNodes(el) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(node => {
+      const words = node.textContent.split(/(\s+)/);
+      const frag = document.createDocumentFragment();
+      words.forEach(w => {
+        if (/^\s+$/.test(w)) {
+          frag.appendChild(document.createTextNode(w));
+        } else if (w) {
+          const outer = document.createElement('span');
+          outer.style.cssText = 'display:inline-block;overflow:hidden;vertical-align:bottom';
+          const inner = document.createElement('span');
+          inner.className = 'wd';
+          inner.style.cssText = 'display:inline-block;will-change:transform';
+          inner.textContent = w;
+          outer.appendChild(inner);
+          frag.appendChild(outer);
+        }
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
   }
-  splitWords(h1);
+  wrapTextNodes(h1);
   gsap.from('.wd', {
-    y: '110%',
-    rotateZ: 4,
-    stagger: 0.04,
-    duration: 1,
-    ease: 'power4.out',
-    delay: 0.3
+    y: '110%', rotateZ: 4, stagger: 0.045, duration: 1,
+    ease: 'power4.out', delay: 0.3
   });
 
-  gsap.to('#heroSub', { opacity: 1, y: 0, duration: 0.9, delay: 0.85, ease: 'power3.out',
-    from: { opacity: 0, y: 24 } });
-  gsap.from('#heroSub', { opacity: 0, y: 24, duration: 0.9, delay: 0.85, ease: 'power3.out' });
-
-  gsap.from('#heroBtns', { opacity: 0, y: 24, duration: 0.8, delay: 1.1, ease: 'power3.out' });
-  gsap.to('#heroBtns', { opacity: 1, delay: 1.1 });
-
-  gsap.from('#heroStats', { opacity: 0, y: 20, duration: 0.8, delay: 1.35, ease: 'power3.out' });
-  gsap.to('#heroStats', { opacity: 1, delay: 1.35 });
-
-  gsap.from('#heroScroll', { opacity: 0, duration: 0.8, delay: 1.9, ease: 'power2.out' });
-  gsap.to('#heroScroll', { opacity: 1, delay: 1.9 });
+  gsap.from('#heroSub',   { opacity: 0, y: 24, duration: 0.9, delay: 0.85, ease: 'power3.out', clearProps: 'all' });
+  gsap.from('#heroBtns',  { opacity: 0, y: 24, duration: 0.8, delay: 1.1,  ease: 'power3.out', clearProps: 'all' });
+  gsap.from('#heroStats', { opacity: 0, y: 20, duration: 0.8, delay: 1.35, ease: 'power3.out', clearProps: 'all' });
+  gsap.from('#heroScroll',{ opacity: 0,        duration: 0.8, delay: 1.9,  ease: 'power2.out', clearProps: 'all' });
 
   // Hero image parallax
   gsap.to('#heroImg', {
@@ -1224,18 +1220,18 @@ function initPage() {
   const track = document.getElementById('listings-track');
   const section = document.getElementById('listings-section');
   if (window.innerWidth > 768 && track) {
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: () => '+=' + (track.scrollWidth - window.innerWidth + 112),
-      scrub: 1,
-      pin: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-      animation: gsap.to(track, {
-        x: () => -(track.scrollWidth - window.innerWidth) + 112,
-        ease: 'none'
-      })
+    gsap.to(track, {
+      x: () => -(track.scrollWidth - window.innerWidth) + 112,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: () => '+=' + (track.scrollWidth - window.innerWidth + 112),
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true
+      }
     });
   }
 
