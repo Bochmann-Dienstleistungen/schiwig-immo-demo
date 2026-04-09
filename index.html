@@ -842,10 +842,6 @@ function goTo(index, dir) {
   });
   tl.to(from, { yPercent: -direction * 100, duration: DURATION, ease: EASE }, 0);
   tl.to(to,   { yPercent: 0, duration: DURATION, ease: EASE }, 0);
-  // Hero bento starts appearing mid-transition, not after — feels connected
-  if (index === 1 && !animated.has(1)) {
-    tl.call(() => { animated.add(1); animatePanel(1); }, [], DURATION * 0.45);
-  }
 }
 
 /* ─── Update UI (dots, counter, nav) ─── */
@@ -909,27 +905,27 @@ function animatePanel(index) {
       countUp(document.querySelector('.lukas-stat:nth-child(3) .lukas-stat-val'), 100, '', '%');
     }, 900);
   } else if (index === 3) {
-    // Eyebrow + heading line mask
-    gsap.fromTo('#slide-portfolio .section-eyebrow', { x: -24, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' });
-    lineReveal('#slide-portfolio .section-h2', 0.1);
-    gsap.fromTo('.port-link', { x: 30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, delay: 0.15, ease: 'power3.out' });
-    // Cards entry
-    gsap.fromTo('.por-card', { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.65, stagger: 0.06, ease: 'power3.out', delay: 0.2 });
+    // Header fades in as unit, then cards cascade up — no line reveal
+    gsap.fromTo('.port-header', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' });
+    gsap.fromTo('.port-link',   { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5, delay: 0.1, ease: 'power2.out' });
+    gsap.fromTo('.por-card', { opacity: 0, y: 48, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.07, ease: 'power3.out', delay: 0.15 });
     startInfiniteSlider();
   } else if (index === 4) {
-    gsap.fromTo('.rechner-inner > *', { y: 32, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.14, duration: 0.75, ease: 'power3.out' });
-    gsap.fromTo('.rechner-result', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.75, delay: 0.18, ease: 'power3.out' });
+    // Left column slides in from left, result card from right — split feel
+    gsap.fromTo('.rechner-inner > *:first-child', { x: -48, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' });
+    gsap.fromTo('.rechner-result',                { x:  48, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, delay: 0.1, ease: 'power3.out' });
   } else if (index === 5) {
-    gsap.fromTo('.kontakt-inner > *:first-child', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: 'expo.out' });
-    gsap.fromTo('.kontakt-inner > *:last-child', { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.9, ease: 'expo.out' });
-    lineReveal('#slide-kontakt .section-h2', 0.15);
+    // Staggered reveal top-to-bottom, no line mask
+    gsap.fromTo('.kontakt-inner', { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' });
+    gsap.fromTo('.kontakt-inner > *:first-child > *', { y: 22, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.09, duration: 0.6, ease: 'power3.out', delay: 0.1 });
+    gsap.fromTo('.kontakt-inner > *:last-child',      { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, delay: 0.25, ease: 'power3.out' });
   }
 }
 
 /* ─── Line mask reveal for headings ─── */
 function lineReveal(selector, delay) {
   const el = document.querySelector(selector);
-  if (!el) return;
+  if (!el || el.querySelector('.lw')) return; // guard: don't wrap twice
   const rawHTML = el.innerHTML;
   // Split by <br> to get lines, wrap each in overflow:hidden mask
   const lines = rawHTML.split(/<br\s*\/?>/i);
