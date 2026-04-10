@@ -7,7 +7,9 @@
 <style>
 :root{--navy:#0a0f1e;--gold:#c9a96e;--gold-light:#e8cfa0;--white:#f5f3ee;}
 *{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 body{background:var(--navy);color:var(--white);font-family:'Georgia',serif;overflow-x:hidden;}
+
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.5rem 3rem;transition:background 0.4s;}
 nav.scrolled{background:rgba(10,15,30,0.92);backdrop-filter:blur(12px);}
 .nav-logo{font-size:1.1rem;letter-spacing:0.25em;color:var(--white);text-decoration:none;}
@@ -15,45 +17,42 @@ nav.scrolled{background:rgba(10,15,30,0.92);backdrop-filter:blur(12px);}
 .nav-links{display:flex;gap:2.5rem;list-style:none;}
 .nav-links a{font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;color:rgba(245,243,238,0.7);text-decoration:none;text-transform:uppercase;transition:color 0.3s;}
 .nav-links a:hover{color:var(--gold);}
-#frame-stage{position:relative;}
-#frame-sticky{position:sticky;top:0;height:100vh;overflow:hidden;background:linear-gradient(135deg,#0d1829 0%,#1a3060 50%,#0d1829 100%);}
-#frame-canvas{width:100%;height:100%;display:block;}
-#frame-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(10,15,30,0.45) 0%,rgba(10,15,30,0) 35%,rgba(10,15,30,0) 65%,rgba(10,15,30,0.75) 100%);z-index:1;}
-#hero-text{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 6rem;pointer-events:none;}
-.hero-eyebrow{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.35em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;opacity:0;transform:translateY(20px);transition:opacity 0.8s,transform 0.8s;}
-.hero-eyebrow.visible{opacity:1;transform:translateY(0);}
-.hero-headline{font-size:clamp(2.5rem,6vw,5.5rem);font-weight:400;line-height:1.05;margin-bottom:2rem;max-width:700px;opacity:0;transform:translateY(30px);transition:opacity 0.8s 0.1s,transform 0.8s 0.1s;}
-.hero-headline.visible{opacity:1;transform:translateY(0);}
+
+/* SCROLL VIDEO HERO */
+#hero-stage{position:relative;height:600vh;}
+#hero-sticky{position:sticky;top:0;height:100vh;overflow:hidden;background:#060c18;}
+#hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.6s;}
+#hero-video.ready{opacity:1;}
+#hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,15,30,0.5) 0%,rgba(10,15,30,0) 40%,rgba(10,15,30,0) 60%,rgba(10,15,30,0.8) 100%);z-index:1;}
+#hero-text{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 6rem;}
+.hero-eyebrow{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.35em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;opacity:0;transform:translateY(16px);transition:opacity 0.8s 0.2s,transform 0.8s 0.2s;}
+.hero-headline{font-size:clamp(2.5rem,6vw,5.5rem);font-weight:400;line-height:1.05;margin-bottom:2rem;max-width:700px;opacity:0;transform:translateY(24px);transition:opacity 0.8s 0.35s,transform 0.8s 0.35s;}
 .hero-headline em{font-style:italic;color:var(--gold-light);}
-.hero-sub{font-family:'Helvetica Neue',sans-serif;font-size:0.85rem;line-height:1.7;color:rgba(245,243,238,0.65);max-width:420px;margin-bottom:2.5rem;opacity:0;transform:translateY(20px);transition:opacity 0.8s 0.2s,transform 0.8s 0.2s;}
-.hero-sub.visible{opacity:1;transform:translateY(0);}
-.hero-cta{display:inline-flex;align-items:center;gap:1rem;padding:1rem 2rem;border:1px solid var(--gold);color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;pointer-events:all;opacity:0;transform:translateY(20px);transition:opacity 0.8s 0.3s,transform 0.8s 0.3s,background 0.3s,color 0.3s;}
-.hero-cta.visible{opacity:1;transform:translateY(0);}
+.hero-sub{font-family:'Helvetica Neue',sans-serif;font-size:0.9rem;line-height:1.8;color:rgba(245,243,238,0.65);max-width:440px;margin-bottom:2.5rem;opacity:0;transform:translateY(16px);transition:opacity 0.8s 0.5s,transform 0.8s 0.5s;}
+.hero-cta{display:inline-flex;align-items:center;gap:1rem;padding:1rem 2rem;border:1px solid var(--gold);color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;opacity:0;transform:translateY(16px);transition:opacity 0.8s 0.65s,transform 0.8s 0.65s,background 0.3s,color 0.3s;}
 .hero-cta:hover{background:var(--gold);color:var(--navy);}
+#hero-text.visible .hero-eyebrow,
+#hero-text.visible .hero-headline,
+#hero-text.visible .hero-sub,
+#hero-text.visible .hero-cta{opacity:1;transform:translateY(0);}
+
 #scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:0.5rem;transition:opacity 0.5s;}
 #scroll-hint.hidden{opacity:0;}
-.scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,transparent,var(--gold));animation:scrollPulse 2s ease-in-out infinite;}
-@keyframes scrollPulse{0%,100%{opacity:0.3;transform:scaleY(0.8)}50%{opacity:1;transform:scaleY(1)}}
+.scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,transparent,var(--gold));animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:1}}
 .scroll-label{font-family:'Helvetica Neue',sans-serif;font-size:0.55rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;}
-#frame-loader{position:fixed;inset:0;background:var(--navy);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;transition:opacity 0.8s;}
-#frame-loader.done{opacity:0;pointer-events:none;}
-.loader-s{font-size:3rem;font-style:italic;color:var(--gold);}
-.loader-bar-wrap{width:200px;height:1px;background:rgba(255,255,255,0.15);}
-#loader-fill{height:1px;background:var(--gold);width:0%;transition:width 0.1s linear;}
-.loader-lbl{font-family:'Helvetica Neue',sans-serif;font-size:0.6rem;letter-spacing:0.3em;color:rgba(255,255,255,0.4);text-transform:uppercase;}
-/* Content sections */
+
+/* CONTENT SECTIONS */
 .content-section{padding:8rem 6rem;}
-.content-section.light{background:var(--white);color:#1a1a1a;}
-.content-section.dark{background:var(--navy);color:var(--white);}
-.sec-eye{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;}
-.light .sec-eye{color:var(--gold);}
-.dark .sec-eye{color:var(--gold);}
+.light{background:var(--white);color:#1a1a1a;}
+.dark{background:var(--navy);color:var(--white);}
+.sec-eye{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;color:var(--gold);}
 .sec-h{font-size:clamp(2rem,4vw,3.5rem);font-weight:400;line-height:1.1;margin-bottom:1.5rem;max-width:600px;}
 .light .sec-h{color:var(--navy);}
-.dark .sec-h{color:var(--white);}
 .sec-b{font-family:'Helvetica Neue',sans-serif;font-size:0.95rem;line-height:1.8;max-width:520px;}
 .light .sec-b{color:#555;}
 .dark .sec-b{color:rgba(245,243,238,0.6);}
+
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:4rem;}
 .card{padding:2.5rem;border:1px solid rgba(201,169,110,0.2);}
 .card-num{font-size:0.6rem;letter-spacing:0.3em;color:var(--gold);font-family:'Helvetica Neue',sans-serif;margin-bottom:1rem;}
@@ -63,29 +62,40 @@ nav.scrolled{background:rgba(10,15,30,0.92);backdrop-filter:blur(12px);}
 .card-text{font-family:'Helvetica Neue',sans-serif;font-size:0.85rem;line-height:1.7;}
 .light .card-text{color:#666;}
 .dark .card-text{color:rgba(245,243,238,0.55);}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:5rem;border-top:1px solid rgba(201,169,110,0.2);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(201,169,110,0.2);margin-top:5rem;}
 .stat{padding:3rem 2rem;border-right:1px solid rgba(201,169,110,0.2);}
 .stat:last-child{border-right:none;}
 .stat-num{font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--gold);line-height:1;}
 .stat-label{font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;margin-top:0.5rem;color:rgba(245,243,238,0.5);}
-.cta-section{background:var(--gold);padding:6rem;display:flex;justify-content:space-between;align-items:center;gap:3rem;}
-.cta-section h2{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:400;color:var(--navy);max-width:500px;line-height:1.1;}
-.cta-btn{display:inline-flex;align-items:center;gap:1rem;padding:1.2rem 2.5rem;background:var(--navy);color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;white-space:nowrap;transition:opacity 0.3s;}
+
+.cta-band{background:var(--gold);padding:6rem;display:flex;justify-content:space-between;align-items:center;gap:3rem;}
+.cta-band h2{font-size:clamp(1.8rem,3.5vw,3rem);font-weight:400;color:var(--navy);max-width:500px;line-height:1.1;}
+.cta-btn{display:inline-flex;align-items:center;gap:1rem;padding:1.2rem 2.5rem;background:var(--navy);color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;transition:opacity 0.3s;white-space:nowrap;}
 .cta-btn:hover{opacity:0.8;}
+
 footer{background:#060c18;padding:3rem 6rem;display:flex;justify-content:space-between;align-items:center;}
 .foot-logo{font-size:0.9rem;letter-spacing:0.3em;color:rgba(255,255,255,0.4);}
 .foot-logo span{color:var(--gold);}
 .foot-copy{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.25);}
-@media(max-width:768px){nav{padding:1.2rem 1.5rem;}.nav-links{display:none;}#hero-text{padding:0 2rem;}.content-section{padding:5rem 2rem;}.cards{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}.cta-section{flex-direction:column;padding:4rem 2rem;}.cta-section h2{text-align:center;}footer{flex-direction:column;gap:1rem;padding:2rem;text-align:center;}}
+
+/* WhatsApp */
+.wa-btn{position:fixed;bottom:2rem;right:2rem;z-index:99;width:52px;height:52px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:transform 0.2s;}
+.wa-btn:hover{transform:scale(1.1);}
+
+@media(max-width:768px){
+  nav{padding:1.2rem 1.5rem;}
+  .nav-links{display:none;}
+  #hero-text{padding:0 2rem;}
+  .content-section{padding:5rem 2rem;}
+  .cards{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .cta-band{flex-direction:column;padding:4rem 2rem;}
+  footer{flex-direction:column;gap:1rem;padding:2rem;text-align:center;}
+}
 </style>
 </head>
 <body>
-
-<div id="frame-loader">
-  <div class="loader-s">S</div>
-  <div class="loader-bar-wrap"><div id="loader-fill"></div></div>
-  <div class="loader-lbl">Wird geladen</div>
-</div>
 
 <nav id="mainNav">
   <a href="#" class="nav-logo"><span>S</span>CHIWIG Immobilien</a>
@@ -96,22 +106,17 @@ footer{background:#060c18;padding:3rem 6rem;display:flex;justify-content:space-b
   </ul>
 </nav>
 
-<div id="frame-stage">
-  <div id="frame-sticky">
-    <canvas id="frame-canvas"></canvas>
-    <div id="frame-overlay"></div>
+<div id="hero-stage">
+  <div id="hero-sticky">
+    <video id="hero-video" src="video.mp4" muted playsinline preload="auto"></video>
+    <div id="hero-overlay"></div>
     <div id="hero-text">
-      <p class="hero-eyebrow" id="te">Immobilien · Zwickau</p>
-      <h1 class="hero-headline" id="th">Jede Immobilie hat<br>ihre <em>Geschichte.</em></h1>
-      <p class="hero-sub" id="ts">Lukas Schiwig begleitet Sie beim Kauf, Verkauf und der Bewertung Ihrer Immobilie — persönlich, kompetent und transparent.</p>
-      <a href="#kontakt" class="hero-cta" id="tc">Kostenlose Bewertung anfragen
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      </a>
+      <p class="hero-eyebrow">Immobilien · Zwickau</p>
+      <h1 class="hero-headline">Jede Immobilie hat<br>ihre <em>Geschichte.</em></h1>
+      <p class="hero-sub">Lukas Schiwig begleitet Sie beim Kauf, Verkauf und der Bewertung Ihrer Immobilie — persönlich, kompetent und transparent.</p>
+      <a href="#kontakt" class="hero-cta">Kostenlose Bewertung anfragen <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
     </div>
-    <div id="scroll-hint">
-      <div class="scroll-line"></div>
-      <span class="scroll-label">Scrollen</span>
-    </div>
+    <div id="scroll-hint"><div class="scroll-line"></div><span class="scroll-label">Scrollen</span></div>
   </div>
 </div>
 
@@ -143,31 +148,16 @@ footer{background:#060c18;padding:3rem 6rem;display:flex;justify-content:space-b
   <h2 class="sec-h">Erfahrung, die<br><em>zählt.</em></h2>
   <p class="sec-b">Seit Jahren begleiten wir Menschen in der Region Zwickau bei den wichtigsten Entscheidungen ihres Lebens.</p>
   <div class="stats-row">
-    <div class="stat">
-      <div class="stat-num">150+</div>
-      <div class="stat-label">Verkaufte Immobilien</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">98%</div>
-      <div class="stat-label">Kundenzufriedenheit</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">8</div>
-      <div class="stat-label">Jahre Erfahrung</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">∅ 42</div>
-      <div class="stat-label">Tage bis Verkauf</div>
-    </div>
+    <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Verkaufte Immobilien</div></div>
+    <div class="stat"><div class="stat-num">98%</div><div class="stat-label">Kundenzufriedenheit</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">Jahre Erfahrung</div></div>
+    <div class="stat"><div class="stat-num">∅ 42</div><div class="stat-label">Tage bis Verkauf</div></div>
   </div>
 </section>
 
-<div class="cta-section" id="kontakt">
+<div class="cta-band" id="kontakt">
   <h2>Bereit, Ihre Immobilie zu verkaufen oder zu kaufen?</h2>
-  <a href="https://wa.me/4915254190819" class="cta-btn">
-    Jetzt Kontakt aufnehmen
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-  </a>
+  <a href="https://wa.me/4915254190819" class="cta-btn">Jetzt Kontakt aufnehmen <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
 </div>
 
 <footer>
@@ -175,96 +165,57 @@ footer{background:#060c18;padding:3rem 6rem;display:flex;justify-content:space-b
   <span class="foot-copy">© 2026 Lukas Schiwig · Alle Rechte vorbehalten</span>
 </footer>
 
+<a href="https://wa.me/4915254190819" class="wa-btn" target="_blank">
+  <svg width="26" height="26" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
 <script>
-const TOTAL_FRAMES = 40;
-const PX_PER_FRAME = 60;
-const canvas = document.getElementById('frame-canvas');
-const ctx = canvas.getContext('2d');
-const stage = document.getElementById('frame-stage');
-const loader = document.getElementById('frame-loader');
-const fill = document.getElementById('loader-fill');
-const nav = document.getElementById('mainNav');
+const video = document.getElementById('hero-video');
+const stage = document.getElementById('hero-stage');
+const heroText = document.getElementById('hero-text');
 const hint = document.getElementById('scroll-hint');
-const txts = ['te','th','ts','tc'].map(id => document.getElementById(id));
+const nav = document.getElementById('mainNav');
+const SCROLL_HEIGHT = window.innerHeight * 5; // 500vh of scroll = full video
 
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  if (cur >= 0) draw(cur);
-}
-resize();
-window.addEventListener('resize', resize);
-
-stage.style.height = `calc(100vh + ${TOTAL_FRAMES * PX_PER_FRAME}px)`;
-
-function pad(n) { return String(n).padStart(3, '0'); }
-const urls = Array.from({length: TOTAL_FRAMES}, (_, i) => `frames/frame_${pad(i+1)}.webp`);
-const imgs = new Array(TOTAL_FRAMES).fill(null);
-let loaded = 0, ready = false;
-
-function draw(i) {
-  const img = imgs[Math.min(i, imgs.length - 1)];
-  if (!img) return;
-  const cw = canvas.width, ch = canvas.height;
-  const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-  const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
-  ctx.clearRect(0, 0, cw, ch);
-  ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
-}
-
-function showText() { txts.forEach(el => el && el.classList.add('visible')); }
-function hideText() { txts.forEach(el => el && el.classList.remove('visible')); }
-
-function finish() {
-  ready = true;
-  loader.classList.add('done');
-  // Draw first available frame
-  const firstLoaded = imgs.findIndex(i => i !== null);
-  if (firstLoaded >= 0) draw(firstLoaded);
-  showText();
-}
-
-// Safety fallback: dismiss loader after 10s no matter what
-const loaderTimeout = setTimeout(finish, 6000);
-
-urls.forEach((url, i) => {
-  const img = new Image();
-  img.onload = () => {
-    imgs[i] = img;
-    loaded++;
-    fill.style.width = Math.round(loaded / TOTAL_FRAMES * 100) + '%';
-    if (loaded === TOTAL_FRAMES) {
-      clearTimeout(loaderTimeout);
-      setTimeout(finish, 300);
-    }
-  };
-  img.onerror = () => {
-    loaded++;
-    fill.style.width = Math.round(loaded / TOTAL_FRAMES * 100) + '%';
-    if (loaded === TOTAL_FRAMES) {
-      clearTimeout(loaderTimeout);
-      setTimeout(finish, 300);
-    }
-  };
-  img.src = url;
+// Show video as soon as enough data is buffered
+video.addEventListener('canplay', () => {
+  video.classList.add('ready');
+  heroText.classList.add('visible');
 });
 
-let cur = -1;
+// Fallback: show content after 2s regardless
+setTimeout(() => {
+  video.classList.add('ready');
+  heroText.classList.add('visible');
+}, 2000);
+
+// Scroll → scrub video
+let ticking = false;
 window.addEventListener('scroll', () => {
-  const top = stage.offsetTop;
-  const scrolled = window.scrollY - top;
-  const total = TOTAL_FRAMES * PX_PER_FRAME;
-  const p = Math.max(0, Math.min(1, scrolled / total));
-  const fi = Math.floor(p * (TOTAL_FRAMES - 1));
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const scrolled = window.scrollY - stage.offsetTop;
+      const total = stage.offsetHeight - window.innerHeight;
+      const p = Math.max(0, Math.min(1, scrolled / total));
 
-  if (fi !== cur && ready) {
-    cur = fi;
-    requestAnimationFrame(() => draw(fi));
+      if (video.duration) {
+        video.currentTime = p * video.duration;
+      }
+
+      // Hide/show text based on scroll progress
+      if (p > 0.05 && p < 0.85) heroText.classList.add('visible');
+      else if (p >= 0.85) heroText.classList.remove('visible');
+
+      if (scrolled > 80) hint.classList.add('hidden');
+      else hint.classList.remove('hidden');
+
+      if (window.scrollY > 60) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+
+      ticking = false;
+    });
+    ticking = true;
   }
-
-  if (p >= 0.04 && p <= 0.88) showText(); else hideText();
-  if (scrolled > 50) hint.classList.add('hidden'); else hint.classList.remove('hidden');
-  if (window.scrollY > 80) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
 }, { passive: true });
 </script>
 </body>
