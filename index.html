@@ -25,16 +25,12 @@ nav.scrolled{background:rgba(10,15,30,0.92);backdrop-filter:blur(12px);}
 #hero-video.ready{opacity:1;}
 #hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,15,30,0.5) 0%,rgba(10,15,30,0) 40%,rgba(10,15,30,0) 60%,rgba(10,15,30,0.8) 100%);z-index:1;}
 #hero-text{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 6rem;}
-.hero-eyebrow{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.35em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;opacity:0;transform:translateY(16px);transition:opacity 0.8s 0.2s,transform 0.8s 0.2s;}
-.hero-headline{font-size:clamp(2.5rem,6vw,5.5rem);font-weight:400;line-height:1.05;margin-bottom:2rem;max-width:700px;opacity:0;transform:translateY(24px);transition:opacity 0.8s 0.35s,transform 0.8s 0.35s;}
+.hero-eyebrow{font-family:'Helvetica Neue',sans-serif;font-size:0.65rem;letter-spacing:0.35em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;will-change:opacity,transform;}
+.hero-headline{font-size:clamp(2.5rem,6vw,5.5rem);font-weight:400;line-height:1.05;margin-bottom:2rem;max-width:700px;will-change:opacity,transform;}
 .hero-headline em{font-style:italic;color:var(--gold-light);}
-.hero-sub{font-family:'Helvetica Neue',sans-serif;font-size:0.9rem;line-height:1.8;color:rgba(245,243,238,0.65);max-width:440px;margin-bottom:2.5rem;opacity:0;transform:translateY(16px);transition:opacity 0.8s 0.5s,transform 0.8s 0.5s;}
-.hero-cta{display:inline-flex;align-items:center;gap:1rem;padding:1rem 2rem;border:1px solid var(--gold);color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;opacity:0;transform:translateY(16px);transition:opacity 0.8s 0.65s,transform 0.8s 0.65s,background 0.3s,color 0.3s;}
+.hero-sub{font-family:'Helvetica Neue',sans-serif;font-size:0.9rem;line-height:1.8;color:rgba(245,243,238,0.65);max-width:440px;margin-bottom:2.5rem;will-change:opacity,transform;}
+.hero-cta{display:inline-flex;align-items:center;gap:1rem;padding:1rem 2rem;border:1px solid var(--gold);color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;will-change:opacity,transform;transition:background 0.3s,color 0.3s;}
 .hero-cta:hover{background:var(--gold);color:var(--navy);}
-#hero-text.visible .hero-eyebrow,
-#hero-text.visible .hero-headline,
-#hero-text.visible .hero-sub,
-#hero-text.visible .hero-cta{opacity:1;transform:translateY(0);}
 
 #scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:0.5rem;transition:opacity 0.5s;}
 #scroll-hint.hidden{opacity:0;}
@@ -111,10 +107,10 @@ footer{background:#060c18;padding:3rem 6rem;display:flex;justify-content:space-b
     <video id="hero-video" src="video.mp4" muted playsinline preload="auto"></video>
     <div id="hero-overlay"></div>
     <div id="hero-text">
-      <p class="hero-eyebrow">Immobilien · Zwickau</p>
-      <h1 class="hero-headline">Jede Immobilie hat<br>ihre <em>Geschichte.</em></h1>
-      <p class="hero-sub">Lukas Schiwig begleitet Sie beim Kauf, Verkauf und der Bewertung Ihrer Immobilie — persönlich, kompetent und transparent.</p>
-      <a href="#kontakt" class="hero-cta">Kostenlose Bewertung anfragen <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
+      <p class="hero-eyebrow" id="t1">Immobilien · Zwickau</p>
+      <h1 class="hero-headline" id="t2">Jede Immobilie hat<br>ihre <em>Geschichte.</em></h1>
+      <p class="hero-sub" id="t3">Lukas Schiwig begleitet Sie beim Kauf, Verkauf und der Bewertung Ihrer Immobilie — persönlich, kompetent und transparent.</p>
+      <a href="#kontakt" class="hero-cta" id="t4">Kostenlose Bewertung anfragen <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></a>
     </div>
     <div id="scroll-hint"><div class="scroll-line"></div><span class="scroll-label">Scrollen</span></div>
   </div>
@@ -170,52 +166,70 @@ footer{background:#060c18;padding:3rem 6rem;display:flex;justify-content:space-b
 </a>
 
 <script>
-const video = document.getElementById('hero-video');
-const stage = document.getElementById('hero-stage');
-const heroText = document.getElementById('hero-text');
-const hint = document.getElementById('scroll-hint');
-const nav = document.getElementById('mainNav');
-const SCROLL_HEIGHT = window.innerHeight * 5; // 500vh of scroll = full video
+const video   = document.getElementById('hero-video');
+const stage   = document.getElementById('hero-stage');
+const hint    = document.getElementById('scroll-hint');
+const nav     = document.getElementById('mainNav');
+const els     = [t1, t2, t3, t4]; // hero text elements
 
-// Show video as soon as enough data is buffered
-video.addEventListener('canplay', () => {
+// ── Easing helpers ──────────────────────────────────────────
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+function mapRange(v, a, b, c, d){ return c + (d - c) * clamp((v - a) / (b - a), 0, 1); }
+
+// ── Show video immediately when ready ───────────────────────
+function showVideo(){
   video.classList.add('ready');
-  heroText.classList.add('visible');
-});
+  animateText(0); // draw initial state
+}
+video.addEventListener('canplay', showVideo, { once: true });
+setTimeout(showVideo, 2000); // hard fallback
 
-// Fallback: show content after 2s regardless
-setTimeout(() => {
-  video.classList.add('ready');
-  heroText.classList.add('visible');
-}, 2000);
+// ── Per-element scroll animation ────────────────────────────
+// Each element enters offset staggered, exits together
+const ENTER_START = 0.0;   // scroll progress where text starts entering
+const ENTER_END   = 0.18;  // fully visible
+const EXIT_START  = 0.72;  // starts fading out
+const EXIT_END    = 0.88;  // fully gone
 
-// Scroll → scrub video
+function animateText(p) {
+  els.forEach((el, i) => {
+    const delay = i * 0.04; // stagger between elements
+    const enterP = mapRange(p, ENTER_START + delay, ENTER_END + delay, 0, 1);
+    const exitP  = mapRange(p, EXIT_START,           EXIT_END,           0, 1);
+
+    const opacity   = clamp(enterP - exitP * enterP, 0, 1);
+    const translateY = (1 - enterP) * 32 + exitP * -24; // slide in from below, exit upward
+
+    el.style.opacity   = opacity;
+    el.style.transform = `translateY(${translateY}px)`;
+  });
+}
+
+// ── Scroll → video scrub ─────────────────────────────────────
 let ticking = false;
+let lastP   = -1;
+
 window.addEventListener('scroll', () => {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      const scrolled = window.scrollY - stage.offsetTop;
-      const total = stage.offsetHeight - window.innerHeight;
-      const p = Math.max(0, Math.min(1, scrolled / total));
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    const scrolled = window.scrollY - stage.offsetTop;
+    const total    = stage.offsetHeight - window.innerHeight;
+    const p        = clamp(scrolled / total, 0, 1);
 
-      if (video.duration) {
-        video.currentTime = p * video.duration;
-      }
+    // Only update video if progress changed meaningfully
+    if (Math.abs(p - lastP) > 0.002 && video.readyState >= 2) {
+      video.currentTime = p * video.duration;
+      lastP = p;
+    }
 
-      // Hide/show text based on scroll progress
-      if (p > 0.05 && p < 0.85) heroText.classList.add('visible');
-      else if (p >= 0.85) heroText.classList.remove('visible');
+    animateText(p);
 
-      if (scrolled > 80) hint.classList.add('hidden');
-      else hint.classList.remove('hidden');
+    hint.classList.toggle('hidden', scrolled > 80);
+    nav.classList.toggle('scrolled', window.scrollY > 60);
 
-      if (window.scrollY > 60) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-
-      ticking = false;
-    });
-    ticking = true;
-  }
+    ticking = false;
+  });
 }, { passive: true });
 </script>
 </body>
