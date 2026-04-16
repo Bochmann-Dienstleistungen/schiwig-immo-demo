@@ -2620,7 +2620,7 @@ async function submitKontakt(e) {
     const r = await fetch(`${PS_API}/contacts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({ contact: {
+      body: JSON.stringify({ client: {
         first_name: firstName,
         last_name:  lastName,
         email:      fd.get('email'),
@@ -2786,7 +2786,7 @@ async function submitBooking(e) {
     const r = await fetch(`${PS_API}/contacts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({ contact: {
+      body: JSON.stringify({ client: {
         first_name: parts.slice(0,-1).join(' ') || parts[0],
         last_name:  parts.length > 1 ? parts[parts.length-1] : '',
         email:      email || undefined,

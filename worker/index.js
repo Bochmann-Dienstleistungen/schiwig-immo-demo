@@ -26,7 +26,7 @@ function corsHeaders(origin) {
   const ok = ALLOWED_ORIGINS.some(o => (origin || '').startsWith(o));
   return {
     'Access-Control-Allow-Origin':  ok ? origin : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age':       '86400',
   };
@@ -91,12 +91,15 @@ export default {
       };
 
       let body;
-      if (request.method === 'POST') {
+      if (request.method === 'POST' || request.method === 'PUT') {
         try { body = JSON.stringify(await request.json()); } catch { body = '{}'; }
       }
 
       const res = await fetch(psUrl, { method: request.method, headers, body });
-      return json(await res.json(), res.status, origin);
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      return json(data, res.status, origin);
     }
 
     return new Response('Not found', { status: 404, headers: corsHeaders(origin) });

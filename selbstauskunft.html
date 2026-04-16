@@ -529,8 +529,8 @@ const INIT = {
   propstack_unit_id:'', strasse:'', plz_ort:'', wohnungs_nr:'',
   wohnflaeche:'', geschoss:'', lage:'', miete:'', nebenkosten:'',
   mietbeginn:'', kaution:'', vertragsdauer:'',
-  name_vorname:'', adresse_telefon:'', email:'',
-  geburtsdatum:'', geburtsort:'', familienstand:'ledig',
+  name_vorname:'', adresse:'', telefon:'', email:'',
+  geburtsdatum:'', geburtsjahr:'', geburtsort:'', familienstand:'ledig',
   beruf:'', aufenthaltserlaubnis:'ja',
   nettoeinkommen:'', nebenverdienste:'', arbeitgeber:'',
   beschaeftigung_dauer:'', vorheriger_vermieter:'', umzugsgrund:'',
@@ -698,10 +698,11 @@ function renderPerson(grid) {
       </button>
       <div class="scan-result-bar" id="scanner-result"></div>
     </div>
-    ${field('E-Mail', 'email', 'max@email.de', false, 'email', true)}
-    ${field('Name, Vorname', 'name_vorname', 'Mustermann, Max', false, 'text', true)}
-    ${field('Adresse & Telefon', 'adresse_telefon', 'Musterstr. 1 · 0171-000000', false, 'text', true)}
-    ${field('Geburtsdatum', 'geburtsdatum', '15.03.1985', true)}
+    ${field('E-Mail', 'email', 'max@mustermann.de', false, 'email', true)}
+    ${fieldName('Name, Vorname', 'name_vorname', 'Mustermann, Max', true)}
+    ${field('Aktuelle Adresse', 'adresse', 'Musterstraße 1, 08056 Zwickau', false, 'text', true)}
+    ${fieldPhone('Telefon', 'telefon', '+49 171 000 0000', true)}
+    ${fieldDate('Geburtsdatum', 'geburtsdatum', 'geburtsjahr', true)}
     ${field('Geburtsort', 'geburtsort', 'Dresden', true)}
     ${field('Familienstand', 'familienstand', 'ledig', true)}
     ${field('Beruf', 'beruf', 'Softwareentwickler', true)}
@@ -788,6 +789,75 @@ function field(label, key, placeholder, half=false, type='text', req=false) {
   </div>`;
 }
 
+// Name-Feld: nur Buchstaben, Umlaute, Komma, Bindestrich, Leerzeichen
+function fieldName(label, key, placeholder, req=false) {
+  const val = escAttr(D[key]||'');
+  return `<div class="span2" data-field="${key}">
+    <div class="field">
+      <label class="field-label">${label}${req?'<span class="field-req">*</span>':''}</label>
+      <input class="field-input" id="fi-${key}" type="text" value="${val}"
+        placeholder="${placeholder}"
+        oninput="this.value=this.value.replace(/[^A-Za-zÄäÖöÜüß\\s,\\-\\.]/g,'');D['${key}']=this.value;clearFieldError('${key}')"
+        onchange="D['${key}']=this.value">
+    </div>
+  </div>`;
+}
+
+// Telefon-Feld: nur Ziffern, +, -, Leerzeichen, ()
+function fieldPhone(label, key, placeholder, req=false) {
+  const val = escAttr(D[key]||'');
+  return `<div class="${req?'':'span2'}" data-field="${key}">
+    <div class="field">
+      <label class="field-label">${label}${req?'<span class="field-req">*</span>':''}</label>
+      <input class="field-input" id="fi-${key}" type="tel" value="${val}"
+        placeholder="${placeholder}"
+        oninput="this.value=this.value.replace(/[^0-9+\\-\\s()\\/]/g,'');D['${key}']=this.value;clearFieldError('${key}')"
+        onchange="D['${key}']=this.value">
+    </div>
+  </div>`;
+}
+
+// Geburtsdatum mit Jahres-Dropdown
+function fieldDate(label, dateKey, yearKey, half=false) {
+  const val = escAttr(D[dateKey]||'');
+  const yr  = D[yearKey] || '';
+  const curYear = new Date().getFullYear();
+  const years = Array.from({length: curYear-1939}, (_,i) => curYear-18-i);
+  const opts  = years.map(y =>
+    `<option value="${y}" ${y==yr?'selected':''}>${y}</option>`
+  ).join('');
+  return `<div class="${half?'':'span2'}" data-field="${dateKey}">
+    <div class="field">
+      <label class="field-label">${label}</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="field-input" id="fi-${dateKey}" type="text" value="${val}"
+          placeholder="TT.MM.JJJJ" style="flex:1"
+          oninput="D['${dateKey}']=this.value;syncYearSelect(this.value)"
+          onchange="D['${dateKey}']=this.value">
+        <select class="field-input" id="yr-select" style="width:100px;padding:10px 8px"
+          onchange="D['${yearKey}']=this.value;syncDateFromYear(this.value)">
+          <option value="">Jahr</option>
+          ${opts}
+        </select>
+      </div>
+    </div>
+  </div>`;
+}
+
+function syncYearSelect(val) {
+  const m = val.match(/(\d{4})$/);
+  const sel = document.getElementById('yr-select');
+  if (m && sel) { sel.value = m[1]; D.geburtsjahr = m[1]; }
+}
+function syncDateFromYear(yr) {
+  const inp = document.getElementById('fi-geburtsdatum');
+  if (!inp) return;
+  const parts = inp.value.split('.');
+  if (parts.length === 3) { parts[2] = yr; inp.value = parts.join('.'); D.geburtsdatum = inp.value; }
+  else if (!inp.value) { inp.value = '__.__.' + yr; }
+  D.geburtsjahr = yr;
+}
+
 function toggle(label, key, opts) {
   const btns = opts.map(([v,l]) =>
     `<button class="toggle-btn ${D[key]===v?'active':''}" onclick="D['${key}']='${v}';render()">${l}</button>`
@@ -820,9 +890,10 @@ const STEP_REQUIRED = [
   },
   () => { // Step 1: Person
     const miss = [], keys = [];
-    if (!D.email.trim())          { miss.push('E-Mail');           keys.push('email'); }
+    if (!D.email.trim() || !D.email.includes('@')) { miss.push('E-Mail (mit @)'); keys.push('email'); }
     if (!D.name_vorname.trim())   { miss.push('Name, Vorname');    keys.push('name_vorname'); }
-    if (!D.adresse_telefon.trim()){ miss.push('Adresse & Telefon');keys.push('adresse_telefon'); }
+    if (!D.adresse.trim())        { miss.push('Adresse');          keys.push('adresse'); }
+    if (!D.telefon.trim())        { miss.push('Telefon');          keys.push('telefon'); }
     return miss.length ? { msg: 'Pflichtfelder fehlen: ' + miss.join(', '), keys } : null;
   },
   () => { // Step 2: Einkommen
@@ -1173,7 +1244,8 @@ Antworte NUR mit einem JSON-Objekt, ohne Erklärungen:
   "name_vorname": "Nachname, Vorname",
   "geburtsdatum": "TT.MM.JJJJ",
   "geburtsort": "",
-  "adresse_telefon": "Straße Nr, PLZ Ort",
+  "adresse": "Straße Nr, PLZ Ort",
+  "telefon": "+49 171 000 0000",
   "beruf": "",
   "arbeitgeber": "",
   "nettoeinkommen": "",
@@ -1250,32 +1322,39 @@ async function finish() {
     const firstName = nameParts[1]||'';
     const email     = D.email || '';
 
+    // Propstack: wrapper key ist "client" (nicht "contact")
     const r = await fetch(`${CFG.PROPSTACK_API}/contacts`, {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ contact:{
+      body: JSON.stringify({ client:{
         first_name: firstName, last_name: lastName,
-        email, phone: (D.adresse_telefon||'').split('·')[1]?.trim() || '',
-        tags:['Selbstauskunft','Mietinteressent']
+        email, phone: D.telefon || '',
+        description: buildNoteContent()
       }})
     });
 
-    if (r.ok) {
+    if (r.ok || r.status === 201) {
       const j = await r.json();
-      propstackContactId = j?.id || j?.contact?.id;
+      propstackContactId = j?.id;
 
-      /* Note mit vollständigen Selbstauskunft-Daten */
+      /* Vollständige Daten per PUT nachreichen */
       if (propstackContactId) {
-        const noteContent = buildNoteContent();
-        await fetch(`${CFG.PROPSTACK_API}/contacts/${propstackContactId}/notes`, {
-          method:'POST',
+        await fetch(`${CFG.PROPSTACK_API}/contacts/${propstackContactId}`, {
+          method:'PUT',
           headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({ note:{ content: noteContent }})
+          body: JSON.stringify({ client:{
+            dob:          D.geburtsdatum || undefined,
+            birth_place:  D.geburtsort   || undefined,
+            nationality:  D.nationalitaet|| undefined,
+            income:       D.nettoeinkommen ? parseFloat(D.nettoeinkommen) : undefined,
+            home_street:  D.adresse ? D.adresse.split(',')[0]?.trim() : undefined
+          }})
         });
-        crmMsg = `✓ Im Propstack CRM gespeichert (Kontakt-ID: ${propstackContactId}). <a href="https://app.propstack.de/contacts/${propstackContactId}" target="_blank" rel="noopener">Im CRM öffnen →</a>`;
+        crmMsg = `✓ Im Propstack CRM gespeichert. <a href="https://app.propstack.de/contacts/${propstackContactId}" target="_blank" rel="noopener">Im CRM öffnen →</a>`;
       }
     } else {
-      throw new Error('Propstack '+r.status);
+      const errText = await r.text().catch(()=>'');
+      throw new Error('Propstack ' + r.status + ': ' + errText.substring(0,100));
     }
   } catch(e) {
     /* Fallback: Formspree */
@@ -1299,7 +1378,7 @@ MIETOBJEKT: ${D.strasse}, ${D.wohnungs_nr} · ${D.plz_ort}
 Miete: ${D.miete} € | NK: ${D.nebenkosten} € | Kaution: ${D.kaution} € | ab ${D.mietbeginn}
 ${'─'.repeat(50)}
 INTERESSENT: ${D.name_vorname}
-E-Mail: ${D.email} | Kontakt: ${D.adresse_telefon}
+E-Mail: ${D.email} | Tel: ${D.telefon} | Adresse: ${D.adresse}
 Geb: ${D.geburtsdatum}, ${D.geburtsort} | ${D.familienstand} | ${D.beruf}
 Aufenthaltserlaubnis: ${D.aufenthaltserlaubnis}
 ${'─'.repeat(50)}
@@ -1424,7 +1503,7 @@ async function downloadPDF() {
 
   y = sectionTitle(doc,'Mietinteressent', y);
   y = fieldRow(doc,[['Name, Vorname',D.name_vorname],['E-Mail',D.email]], y, 2);
-  y = fieldRow(doc,[['Adresse & Telefon',D.adresse_telefon]], y, 1);
+  y = fieldRow(doc,[['Adresse',D.adresse],['Telefon',D.telefon]], y, 2);
   y += 4;
 
   y = sectionTitle(doc,'Persönliche Angaben', y);
