@@ -257,21 +257,91 @@ body { background:var(--off); font-family:var(--sans); color:var(--black); min-h
 .ps-error a { color: var(--gold-d); cursor: pointer; }
 
 /* ─── SCANNER ────────────────────────────── */
-.scanner-zone {
-  border:1.5px dashed var(--g200); padding:2rem;
-  text-align:center; cursor:pointer; transition:border-color .2s;
-  background:transparent; font-family:var(--sans);
+/* ─── MOBILE SCANNER CARD (nur Smartphone) ── */
+.scan-card {
+  display: none; /* Desktop: versteckt */
 }
-.scanner-zone:hover { border-color:var(--gold); }
-.scanner-zone input { display:none; }
-.scanner-icon { font-size:2rem; opacity:.3; margin-bottom:.8rem; display:block; }
-.scanner-txt { font-size:11px; color:var(--g400); line-height:1.8; }
-.scanner-gold { color:var(--gold); font-weight:600; }
-.scanner-result {
-  margin-top:1rem; padding:12px 16px;
-  background:rgba(201,169,110,0.07); border-left:2px solid var(--gold);
-  font-size:11px; color:var(--gold-d); line-height:1.7; display:none;
+@media (max-width: 768px) {
+  .scan-card {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--black); color: var(--white);
+    padding: 18px 20px; margin-bottom: 4px; cursor: pointer;
+    border: none; width: 100%; font-family: var(--sans);
+    transition: opacity .2s;
+  }
+  .scan-card:active { opacity: .8; }
+  .scan-card-icon {
+    width: 44px; height: 44px; background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; flex-shrink: 0;
+  }
+  .scan-card-body { text-align: left; }
+  .scan-card-title { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .scan-card-sub { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
 }
+
+/* ─── SCANNER FULLSCREEN OVERLAY ─────────── */
+.scan-overlay {
+  display: none; position: fixed; inset: 0; z-index: 99999;
+  background: #000; flex-direction: column;
+}
+.scan-overlay.open { display: flex; }
+.scan-ov-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.scan-ov-back {
+  background: transparent; border: none; color: var(--gold);
+  font-size: 13px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; cursor: pointer; font-family: var(--sans);
+  padding: 8px 0;
+}
+.scan-ov-title {
+  font-size: 13px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--white);
+}
+.scan-ov-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 2rem; gap: 2rem;
+}
+.scan-ov-icon { font-size: 5rem; opacity: .7; }
+.scan-ov-desc {
+  text-align: center; color: rgba(255,255,255,.6);
+  font-size: 14px; line-height: 1.7; max-width: 280px;
+}
+.scan-ov-desc strong { color: var(--white); }
+.scan-ov-btn {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--gold); color: var(--white);
+  padding: 16px 32px; font-size: 13px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  border: none; cursor: pointer; font-family: var(--sans);
+  transition: opacity .2s; position: relative; overflow: hidden;
+}
+.scan-ov-btn input {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  font-size: 100px; /* trick: large font-size captures touch */
+}
+.scan-ov-status {
+  font-size: 12px; color: rgba(255,255,255,.5);
+  text-align: center; min-height: 20px;
+}
+.scan-result-bar {
+  margin-top: 1rem; padding: 12px 16px;
+  background: rgba(201,169,110,.07); border-left: 2px solid var(--gold);
+  font-size: 11px; color: var(--gold); line-height: 1.7; display: none;
+}
+
+/* ─── VALIDIERUNG ────────────────────────── */
+.val-error {
+  display: none; margin-top: 24px;
+  background: #FEF2F2; border-left: 3px solid #EF4444;
+  padding: 12px 16px; font-size: 12px; color: #B91C1C;
+  line-height: 1.6;
+}
+.field-req { color: #EF4444; margin-left: 2px; }
+.field-input.error { border-color: #EF4444 !important; background: #FFF5F5; }
 
 /* ─── LOAD UNIT SECTION ──────────────────── */
 .unit-load-row { display:flex; gap:12px; align-items:stretch; }
@@ -413,6 +483,26 @@ body { background:var(--off); font-family:var(--sans); color:var(--black); min-h
       <div class="propstack-badge" id="crm-badge" style="display:none"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- Mobile Scanner Overlay -->
+<div class="scan-overlay" id="scanOverlay">
+  <div class="scan-ov-header">
+    <button class="scan-ov-back" onclick="closeScanner()">← Zurück</button>
+    <span class="scan-ov-title">Dokument scannen</span>
+  </div>
+  <div class="scan-ov-body">
+    <div class="scan-ov-icon">📄</div>
+    <div class="scan-ov-desc">
+      Halten Sie <strong>Personalausweis</strong> oder <strong>Gehaltsnachweis</strong> gut lesbar vor die Kamera.<br><br>
+      Die KI erkennt alle Felder automatisch.
+    </div>
+    <button class="scan-ov-btn" type="button">
+      📸 &nbsp;Jetzt fotografieren
+      <input type="file" accept="image/*" capture="environment" onchange="handleScanCapture(this)">
+    </button>
+    <div class="scan-ov-status" id="scan-ov-status"></div>
   </div>
 </div>
 
@@ -597,26 +687,20 @@ function objCell(l,v) {
 /* ─── STEP 1: Person ─────────────────────── */
 function renderPerson(grid) {
   grid.innerHTML = `
-    <!-- KI-Scanner -->
-    <div class="span2" style="margin-bottom:8px">
-      <div class="field-label" style="margin-bottom:10px">
-        KI-Dokumentenscanner
-        <span style="font-weight:400;color:var(--g400);letter-spacing:0;text-transform:none;font-size:10px"> — optional</span>
-      </div>
-      <label class="scanner-zone" for="scanner-file" id="scanner-zone">
-        <input type="file" id="scanner-file" accept="image/*,.pdf" onchange="scanDocument(this)">
-        <span class="scanner-icon">📄</span>
-        <div class="scanner-txt">
-          <span class="scanner-gold">Datei hier ablegen oder klicken</span><br>
-          Personalausweis · Gehaltsnachweis · Lohnzettel<br>
-          KI erkennt Felder automatisch und füllt das Formular vor
+    <!-- Mobile KI-Scanner (nur Smartphone) -->
+    <div class="span2">
+      <button class="scan-card" onclick="openScanner()" type="button">
+        <div class="scan-card-icon">📸</div>
+        <div class="scan-card-body">
+          <div class="scan-card-title">Formular automatisch ausfüllen</div>
+          <div class="scan-card-sub">Ausweis oder Gehaltsnachweis fotografieren — KI füllt alle Felder</div>
         </div>
-      </label>
-      <div class="scanner-result" id="scanner-result"></div>
+      </button>
+      <div class="scan-result-bar" id="scanner-result"></div>
     </div>
-    ${field('E-Mail', 'email', 'max@email.de', false, 'email')}
-    ${field('Name, Vorname', 'name_vorname', 'Mustermann, Max')}
-    ${field('Adresse & Telefon', 'adresse_telefon', 'Musterstr. 1 · 0171-000000')}
+    ${field('E-Mail', 'email', 'max@email.de', false, 'email', true)}
+    ${field('Name, Vorname', 'name_vorname', 'Mustermann, Max', false, 'text', true)}
+    ${field('Adresse & Telefon', 'adresse_telefon', 'Musterstr. 1 · 0171-000000', false, 'text', true)}
     ${field('Geburtsdatum', 'geburtsdatum', '15.03.1985', true)}
     ${field('Geburtsort', 'geburtsort', 'Dresden', true)}
     ${field('Familienstand', 'familienstand', 'ledig', true)}
@@ -629,12 +713,12 @@ function renderPerson(grid) {
 /* ─── STEP 2: Einkommen ──────────────────── */
 function renderEinkommen(grid) {
   grid.innerHTML = `
-    ${field('Monatl. Nettoeinkommen (€)', 'nettoeinkommen', '3.200', true, 'number')}
+    ${field('Monatl. Nettoeinkommen (€)', 'nettoeinkommen', '3.200', true, 'number', true)}
     ${field('Nebenverdienste (€)', 'nebenverdienste', '0', true, 'number')}
-    ${field('Arbeitgeber', 'arbeitgeber', 'Muster GmbH')}
+    ${field('Arbeitgeber', 'arbeitgeber', 'Muster GmbH', false, 'text', true)}
     ${field('Beschäftigungsdauer', 'beschaeftigung_dauer', '3 Jahre', true)}
     ${field('Vorheriger Vermieter', 'vorheriger_vermieter', 'Hans Meier, Leipzig', true)}
-    ${field('Grund des Umzugs', 'umzugsgrund', 'Neue Arbeitsstelle')}`;
+    ${field('Grund des Umzugs', 'umzugsgrund', 'Neue Arbeitsstelle', false, 'text', true)}`;
 }
 
 /* ─── STEP 3: Finanzen ───────────────────── */
@@ -691,14 +775,14 @@ function renderNavRow() {
 }
 
 /* ─── FIELD HELPERS ──────────────────────── */
-function field(label, key, placeholder, half=false, type='text') {
+function field(label, key, placeholder, half=false, type='text', req=false) {
   const val = escAttr(D[key]||'');
-  return `<div class="${half?'':'span2'}">
+  return `<div class="${half?'':'span2'}" data-field="${key}">
     <div class="field">
-      <label class="field-label">${label}</label>
-      <input class="field-input" type="${type}" value="${val}"
+      <label class="field-label">${label}${req ? '<span class="field-req">*</span>' : ''}</label>
+      <input class="field-input" id="fi-${key}" type="${type}" value="${val}"
         placeholder="${placeholder}"
-        oninput="D['${key}']=this.value"
+        oninput="D['${key}']=this.value;clearFieldError('${key}')"
         onchange="D['${key}']=this.value">
     </div>
   </div>`;
@@ -727,8 +811,83 @@ function checkbox(key, label) {
 function escAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
 /* ─── STEP NAVIGATION ────────────────────── */
-function nextStep() { if(step < STEPS.length-1){ step++; render(); window.scrollTo(0,0); }}
+/* ─── VALIDIERUNG ────────────────────────── */
+const STEP_REQUIRED = [
+  () => { // Step 0: Objekt
+    if (!D.strasse.trim() && !unitLoaded)
+      return { msg: 'Bitte wählen Sie ein Objekt aus oder füllen Sie die Adresse manuell aus.', keys: [] };
+    return null;
+  },
+  () => { // Step 1: Person
+    const miss = [], keys = [];
+    if (!D.email.trim())          { miss.push('E-Mail');           keys.push('email'); }
+    if (!D.name_vorname.trim())   { miss.push('Name, Vorname');    keys.push('name_vorname'); }
+    if (!D.adresse_telefon.trim()){ miss.push('Adresse & Telefon');keys.push('adresse_telefon'); }
+    return miss.length ? { msg: 'Pflichtfelder fehlen: ' + miss.join(', '), keys } : null;
+  },
+  () => { // Step 2: Einkommen
+    const miss = [], keys = [];
+    if (!String(D.nettoeinkommen).trim()) { miss.push('Nettoeinkommen'); keys.push('nettoeinkommen'); }
+    if (!D.arbeitgeber.trim())            { miss.push('Arbeitgeber');    keys.push('arbeitgeber'); }
+    if (!D.umzugsgrund.trim())            { miss.push('Umzugsgrund');    keys.push('umzugsgrund'); }
+    return miss.length ? { msg: 'Pflichtfelder fehlen: ' + miss.join(', '), keys } : null;
+  },
+  () => null, // Step 3: Finanzen — keine Pflichtfelder
+  () => { // Step 4: Abschluss
+    if (!D.keine_eidestattliche || !D.kein_konkurs || !D.zahlfaehig || !D.bonitaet)
+      return { msg: 'Bitte bestätigen Sie alle vier Erklärungen.', keys: [] };
+    if (!D.datum.trim())
+      return { msg: 'Bitte tragen Sie Ort und Datum ein.', keys: ['datum'] };
+    return null;
+  }
+];
+
+function showValError(msg, keys=[]) {
+  let el = document.getElementById('val-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'val-error'; el.className = 'val-error';
+    document.querySelector('.nav-row')?.before(el);
+  }
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+  keys.forEach(k => document.getElementById('fi-' + k)?.classList.add('error'));
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function clearFieldError(key) {
+  document.getElementById('fi-' + key)?.classList.remove('error');
+  const el = document.getElementById('val-error');
+  if (el) el.style.display = 'none';
+}
+
+function nextStep() {
+  const err = STEP_REQUIRED[step]?.();
+  if (err) { showValError(err.msg, err.keys); return; }
+  const el = document.getElementById('val-error');
+  if (el) el.style.display = 'none';
+  if (step < STEPS.length-1) { step++; render(); window.scrollTo(0,0); }
+}
 function prevStep() { if(step > 0){ step--; render(); window.scrollTo(0,0); }}
+
+/* ─── MOBILE SCANNER ─────────────────────── */
+function openScanner() {
+  document.getElementById('scanOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeScanner() {
+  document.getElementById('scanOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleScanCapture(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('scan-ov-status');
+  statusEl.textContent = '⏳ KI analysiert Dokument …';
+  scanDocument(file, () => {
+    statusEl.textContent = '✓ Felder wurden ausgefüllt';
+    setTimeout(() => closeScanner(), 1200);
+  });
+}
 
 /* ═══════════════════════════════════════════════════════════════
    PROPERTY SEARCH — LIVE AUS PROPSTACK
@@ -991,14 +1150,10 @@ function skipUnitLoad() {
 /* ═══════════════════════════════════════════════════════════════
    KI-SCANNER — ANTHROPIC VISION
 ═══════════════════════════════════════════════════════════════ */
-async function scanDocument(input) {
-  const file = input.files[0];
+async function scanDocument(file, onDone) {
   if (!file) return;
-  const zone   = document.getElementById('scanner-zone');
   const result = document.getElementById('scanner-result');
   showStatus('KI analysiert Dokument …');
-  zone.querySelector('.scanner-txt').innerHTML =
-    `<span class="scanner-gold">Analysiere: ${file.name}</span><br>Bitte warten …`;
 
   try {
     const b64 = await fileToBase64(file);
@@ -1048,18 +1203,19 @@ Felder die nicht erkennbar sind als leeren String lassen.` }
       if (v && D.hasOwnProperty(k)) { D[k]=v; filled.push(k); }
     });
 
-    result.style.display = '';
-    result.innerHTML = filled.length
-      ? `✓ ${filled.length} Felder erkannt und vorausgefüllt: ${filled.map(f=>`<strong>${f}</strong>`).join(', ')}`
-      : '⚠ Keine Felder erkannt — bitte manuell ausfüllen.';
+    if (result) {
+      result.style.display = '';
+      result.innerHTML = filled.length
+        ? `✓ ${filled.length} Felder erkannt und vorausgefüllt`
+        : '⚠ Keine Felder erkannt — bitte manuell ausfüllen.';
+    }
     showStatus('Dokument analysiert ✓', 'ok');
     render();
+    if (onDone) onDone();
   } catch(e) {
-    result.style.display='';
-    result.innerHTML='⚠ KI-Analyse nicht verfügbar — bitte manuell ausfüllen. ('+ e.message +')';
-    zone.querySelector('.scanner-txt').innerHTML =
-      `<span class="scanner-gold">Datei hier ablegen oder klicken</span><br>Personalausweis · Gehaltsnachweis · Lohnzettel`;
+    if (result) { result.style.display=''; result.innerHTML='⚠ Analyse nicht verfügbar — bitte manuell ausfüllen.'; }
     showStatus('Scanner-Fehler: '+e.message, 'err');
+    if (onDone) onDone();
   }
 }
 
