@@ -486,6 +486,12 @@ body { background:var(--off); font-family:var(--sans); color:var(--black); min-h
   </div>
 </div>
 
+<footer style="text-align:center;padding:32px 24px 16px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.06em;">
+  <a href="datenschutz.html" target="_blank" style="color:rgba(201,169,110,.5);text-decoration:none;margin-right:20px;">Datenschutz</a>
+  <a href="impressum.html" target="_blank" style="color:rgba(201,169,110,.5);text-decoration:none;">Impressum</a>
+  <div style="margin-top:8px;">Ihre Daten werden sicher übertragen und ausschließlich zur Mietprüfung verwendet.</div>
+</footer>
+
 <!-- Mobile Scanner Overlay -->
 <div class="scan-overlay" id="scanOverlay">
   <div class="scan-ov-header">
@@ -496,7 +502,8 @@ body { background:var(--off); font-family:var(--sans); color:var(--black); min-h
     <div class="scan-ov-icon">📄</div>
     <div class="scan-ov-desc">
       Halten Sie <strong>Personalausweis</strong> oder <strong>Gehaltsnachweis</strong> gut lesbar vor die Kamera.<br><br>
-      Die KI erkennt alle Felder automatisch.
+      Die KI erkennt alle Felder automatisch.<br><br>
+      <span style="font-size:11px;opacity:.5;">Das Foto wird nur zur Analyse übertragen und nicht gespeichert. <a href="datenschutz.html" target="_blank" style="color:var(--gold);">Datenschutz</a></span>
     </div>
     <button class="scan-ov-btn" type="button">
       📸 &nbsp;Jetzt fotografieren
@@ -959,9 +966,13 @@ function handleScanCapture(input) {
   if (!file) return;
   const statusEl = document.getElementById('scan-ov-status');
   statusEl.textContent = '⏳ KI analysiert Dokument …';
-  scanDocument(file, () => {
-    statusEl.textContent = '✓ Felder wurden ausgefüllt';
-    setTimeout(() => closeScanner(), 1200);
+  scanDocument(file, (success, count) => {
+    statusEl.textContent = success && count > 0
+      ? `✓ ${count} Felder automatisch ausgefüllt`
+      : success
+        ? '⚠ Keine Felder erkannt — bitte manuell ausfüllen'
+        : '⚠ Analyse fehlgeschlagen — bitte manuell ausfüllen';
+    setTimeout(() => closeScanner(), 1800);
   });
 }
 
@@ -1228,7 +1239,6 @@ function skipUnitLoad() {
 ═══════════════════════════════════════════════════════════════ */
 async function scanDocument(file, onDone) {
   if (!file) return;
-  const result = document.getElementById('scanner-result');
   showStatus('KI analysiert Dokument …');
 
   try {
@@ -1244,18 +1254,8 @@ async function scanDocument(file, onDone) {
           { type:'image', source:{ type:'base64', media_type:mime, data:b64 }},
           { type:'text', text:
 `Analysiere dieses Dokument (Personalausweis, Gehaltsnachweis oder ähnliches) und extrahiere alle Daten für eine Mieter-Selbstauskunft.
-Antworte NUR mit einem JSON-Objekt, ohne Erklärungen:
-{
-  "name_vorname": "Nachname, Vorname",
-  "geburtsdatum": "TT.MM.JJJJ",
-  "geburtsort": "",
-  "adresse": "Straße Nr, PLZ Ort",
-  "telefon": "+49 171 000 0000",
-  "beruf": "",
-  "arbeitgeber": "",
-  "nettoeinkommen": "",
-  "email": ""
-}
+Antworte NUR mit einem JSON-Objekt, ohne Erklärungen, ohne Markdown-Blöcke:
+{"name_vorname":"Nachname, Vorname","geburtsdatum":"TT.MM.JJJJ","geburtsort":"","adresse":"Straße Nr, PLZ Ort","telefon":"","beruf":"","arbeitgeber":"","nettoeinkommen":"","email":""}
 Felder die nicht erkennbar sind als leeren String lassen.` }
         ]
       }]
@@ -1263,36 +1263,48 @@ Felder die nicht erkennbar sind als leeren String lassen.` }
 
     const r = await fetch(CFG.WORKER + '/scan', {
       method:'POST',
-      headers:{
-        'Content-Type':'application/json'
-      },
+      headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify(payload)
     });
 
     if (!r.ok) throw new Error('API '+r.status);
     const j = await r.json();
     const txt = j.content?.[0]?.text || '{}';
-    const clean = txt.replace(/```json?\n?/g,'').replace(/```/g,'').trim();
+    // Strip any markdown fences just in case
+    const clean = txt.replace(/```[\s\S]*?```/g, m => m.replace(/```\w*\n?/g,'')).replace(/```/g,'').trim();
     const extracted = JSON.parse(clean);
 
     let filled = [];
     Object.entries(extracted).forEach(([k,v]) => {
-      if (v && D.hasOwnProperty(k)) { D[k]=v; filled.push(k); }
+      if (v && Object.prototype.hasOwnProperty.call(D, k)) {
+        D[k] = v;
+        filled.push(k);
+      }
     });
+    // Geburtsjahr aus geburtsdatum ableiten
+    if (D.geburtsdatum) {
+      const p = D.geburtsdatum.split('.');
+      if (p[2]) D.geburtsjahr = p[2];
+    }
 
-    if (result) {
-      result.style.display = '';
-      result.innerHTML = filled.length
+    showStatus('Dokument analysiert ✓', 'ok');
+    render(); // baut DOM neu
+
+    // NACH render() neu abfragen — alter Verweis ist stale
+    const resultEl = document.getElementById('scanner-result');
+    if (resultEl) {
+      resultEl.style.display = '';
+      resultEl.innerHTML = filled.length
         ? `✓ ${filled.length} Felder erkannt und vorausgefüllt`
         : '⚠ Keine Felder erkannt — bitte manuell ausfüllen.';
     }
-    showStatus('Dokument analysiert ✓', 'ok');
-    render();
-    if (onDone) onDone();
+    if (onDone) onDone(true, filled.length);
   } catch(e) {
-    if (result) { result.style.display=''; result.innerHTML='⚠ Analyse nicht verfügbar — bitte manuell ausfüllen.'; }
     showStatus('Scanner-Fehler: '+e.message, 'err');
-    if (onDone) onDone();
+    render();
+    const resultEl = document.getElementById('scanner-result');
+    if (resultEl) { resultEl.style.display=''; resultEl.innerHTML='⚠ Analyse nicht verfügbar — bitte manuell ausfüllen.'; }
+    if (onDone) onDone(false, 0);
   }
 }
 
