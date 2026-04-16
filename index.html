@@ -1417,6 +1417,114 @@ footer {
 .cookie-btn:hover { background: var(--color-accent-light); }
 
 /* ═══════════════════════════════════════════
+   MIETER SECTION
+═══════════════════════════════════════════ */
+.mieter-section {
+  background: var(--color-dark);
+  padding: clamp(4rem,8vw,7rem) var(--pad-x);
+}
+.mieter-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem,6vw,8rem);
+  align-items: center;
+}
+.mieter-text .section-label { color: rgba(255,255,255,.45); }
+.mieter-text h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: var(--fs-h2);
+  font-weight: 300;
+  color: #fff;
+  line-height: 1.05;
+  margin: 1rem 0 1.5rem;
+}
+.mieter-text h2 em { font-style: italic; color: rgba(255,255,255,.6); }
+.mieter-text p { color: rgba(255,255,255,.55); line-height: 1.85; margin-bottom: 2.5rem; font-size: var(--fs-body); }
+.mieter-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-white {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: var(--color-dark);
+  padding: 0.95rem 2rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; text-decoration: none;
+  border: none; cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+.btn-white:hover { background: var(--color-surface); transform: translateY(-2px); }
+.btn-outline-white {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; color: rgba(255,255,255,.8);
+  padding: 0.95rem 2rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; text-decoration: none;
+  border: 1px solid rgba(255,255,255,.25); cursor: pointer;
+  transition: border-color .2s, color .2s, transform .15s;
+}
+.btn-outline-white:hover { border-color: rgba(255,255,255,.6); color: #fff; transform: translateY(-2px); }
+.mieter-cards { display: flex; flex-direction: column; gap: 16px; }
+.mieter-card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 4px;
+  padding: 1.5rem;
+  display: flex; align-items: flex-start; gap: 1rem;
+}
+.mieter-card-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.mieter-card h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.2rem; font-weight: 400; color: #fff; margin-bottom: 0.3rem;
+}
+.mieter-card p { font-size: 0.85rem; color: rgba(255,255,255,.45); line-height: 1.6; margin: 0; }
+
+/* ═══════════════════════════════════════════
+   STICKY MOBILE BAR
+═══════════════════════════════════════════ */
+.sticky-mobile-bar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .sticky-mobile-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 8000;
+    background: #fff;
+    border-top: 1px solid rgba(26,63,143,.1);
+    box-shadow: 0 -4px 20px rgba(10,25,60,.1);
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+  .sticky-bar-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 0.75rem 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; text-decoration: none;
+    border-radius: 3px; cursor: pointer; border: none;
+    transition: opacity .15s;
+  }
+  .sticky-bar-btn:active { opacity: .8; }
+  .sticky-bar-call {
+    background: transparent;
+    color: var(--color-accent);
+    border: 1.5px solid var(--color-accent);
+  }
+  .sticky-bar-anfrage {
+    background: var(--color-accent);
+    color: #fff;
+  }
+  /* push FAB + cookie banner up above sticky bar */
+  .fab-wrap { bottom: calc(5rem + env(safe-area-inset-bottom)) !important; }
+  body:has(.cookie-banner:not(.hidden)) .sticky-mobile-bar { bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
+}
+
+/* ═══════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════ */
 @media (max-width: 1024px) {
@@ -1438,6 +1546,8 @@ footer {
   .process-steps::before { display: none; }
   .dual-inner, .dual-inner.reverse { grid-template-columns: 1fr; direction: ltr; }
   .dual-image { aspect-ratio: 16/9; }
+  .mieter-inner { grid-template-columns: 1fr; }
+  .mieter-ctas { flex-direction: column; }
   .services-grid { grid-template-columns: 1fr; }
   .support-grid { grid-template-columns: 1fr; }
   .blog-grid { grid-template-columns: 1fr; }
@@ -1445,6 +1555,7 @@ footer {
   .cta-form { grid-template-columns: 1fr; }
   .cta-form input, .cta-form textarea, .cta-form select, .cta-form button[type="submit"] { grid-column: 1; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
+  body { padding-bottom: 4.5rem; }
 }
 @media (max-width: 480px) {
   .footer-top { grid-template-columns: 1fr; }
@@ -1603,8 +1714,8 @@ footer {
 <!-- Mobile Nav -->
 <div class="mobile-nav" id="mobileNav">
   <button class="mobile-nav-close" id="mobileNavClose">✕</button>
-  <a href="#kaufen">Kaufen</a>
-  <a href="#verkaufen">Verkaufen</a>
+  <a href="anfrage.html?flow=kaufen" target="_blank">Kaufen</a>
+  <a href="anfrage.html?flow=verkaufen" target="_blank">Verkaufen</a>
   <a href="anfrage.html?flow=mieten" target="_blank">Mieten</a>
   <a href="#ueber-uns">Über uns</a>
   <a href="#bewertung">Wertrechner</a>
@@ -1618,8 +1729,8 @@ footer {
     <span class="nav-logo-sub">Immobilien · Zwickau</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#kaufen">Kaufen</a></li>
-    <li><a href="#verkaufen">Verkaufen</a></li>
+    <li><a href="anfrage.html?flow=kaufen" target="_blank">Kaufen</a></li>
+    <li><a href="anfrage.html?flow=verkaufen" target="_blank">Verkaufen</a></li>
     <li><a href="anfrage.html?flow=mieten" target="_blank">Mieten</a></li>
     <li><a href="#ueber-uns">Über uns</a></li>
     <li><a href="#bewertung">Wertrechner</a></li>
@@ -1650,11 +1761,11 @@ footer {
 
     <!-- Minimal CTAs -->
     <div class="hero-ctas">
-      <a href="#kontakt" class="hero-cta-text">
-        Beratung anfragen <span class="hero-cta-arrow">→</span>
+      <a href="anfrage.html" target="_blank" class="hero-cta-text">
+        Anfrage stellen <span class="hero-cta-arrow">→</span>
       </a>
-      <a href="#leistungen" class="hero-cta-text">
-        Unsere Leistungen <span class="hero-cta-arrow">→</span>
+      <a href="#bewertung" class="hero-cta-text">
+        Immobilienwert ermitteln <span class="hero-cta-arrow">→</span>
       </a>
     </div>
   </div>
@@ -1790,7 +1901,7 @@ footer {
         <li>Rechtssichere Vertragsabwicklung</li>
         <li>Persönliche Begleitung bis zur Übergabe</li>
       </ul>
-      <a href="#kontakt" class="btn-dark">Jetzt Bewertung anfragen</a>
+      <a href="anfrage.html?flow=verkaufen" target="_blank" class="btn-dark">Jetzt Bewertung anfragen</a>
     </div>
   </div>
 </section>
@@ -1812,7 +1923,7 @@ footer {
         <li>Prüfung aller Unterlagen</li>
         <li>Unterstützung bei der Preisverhandlung</li>
       </ul>
-      <a href="#kontakt" class="btn-dark">Suchanfrage stellen</a>
+      <a href="anfrage.html?flow=kaufen" target="_blank" class="btn-dark">Suchanfrage stellen</a>
     </div>
   </div>
 </section>
@@ -1931,6 +2042,44 @@ footer {
   </div>
 </section>
 
+<!-- MIETER SECTION -->
+<section class="mieter-section" id="mieten">
+  <div class="mieter-inner">
+    <div class="mieter-text fade-up">
+      <span class="section-label">Für Mietinteressenten</span>
+      <h2>Auf der Suche nach<br><em>Ihrem neuen Zuhause?</em></h2>
+      <p>Wir verwalten und vermarkten Mietobjekte in Zwickau und Umgebung. Sagen Sie uns, was Sie suchen — wir melden uns, sobald das passende Objekt verfügbar ist.</p>
+      <div class="mieter-ctas">
+        <a href="anfrage.html?flow=mieten" target="_blank" class="btn-white">Mietanfrage stellen →</a>
+        <a href="selbstauskunft.html" target="_blank" class="btn-outline-white">Selbstauskunft ausfüllen</a>
+      </div>
+    </div>
+    <div class="mieter-cards fade-up">
+      <div class="mieter-card">
+        <div class="mieter-card-icon">🔍</div>
+        <div>
+          <h4>Wir suchen für Sie</h4>
+          <p>Teilen Sie uns Ihre Wünsche mit — Größe, Lage, Budget. Wir informieren Sie aktiv bei passenden Objekten.</p>
+        </div>
+      </div>
+      <div class="mieter-card">
+        <div class="mieter-card-icon">📋</div>
+        <div>
+          <h4>Selbstauskunft digital</h4>
+          <p>Füllen Sie die Mieter-Selbstauskunft direkt online aus — spart Zeit für Sie und uns.</p>
+        </div>
+      </div>
+      <div class="mieter-card">
+        <div class="mieter-card-icon">🤝</div>
+        <div>
+          <h4>Faire Konditionen</h4>
+          <p>Für Mieter entstehen bei uns keine Maklerkosten — wir werden vom Vermieter beauftragt.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- WERTRECHNER -->
 <section class="rechner-section" id="bewertung">
   <div class="container">
@@ -1983,7 +2132,7 @@ footer {
         <div class="rr-value" id="rrValue">192.000 €</div>
         <div class="rr-divider"></div>
         <p class="rr-note">Eine erste Orientierung auf Basis aktueller Vergleichsdaten für Zwickau und Umgebung. Der tatsächlich erzielbare Preis hängt von weiteren Faktoren ab — lassen Sie uns sprechen.</p>
-        <a href="#kontakt" class="rr-cta">Kostenloses Bewertungsgespräch</a>
+        <a href="anfrage.html?flow=verkaufen" target="_blank" class="rr-cta">Jetzt von Lukas bewerten lassen</a>
       </div>
       <p class="rr-disclaimer">Unverbindliche Orientierungsschätzung · Kostenlose Präzisionsbewertung auf Anfrage</p>
     </div>
@@ -2087,6 +2236,12 @@ footer {
   </div>
 </section>
 
+<!-- STICKY MOBILE BAR -->
+<div class="sticky-mobile-bar">
+  <a href="tel:015735792768" class="sticky-bar-btn sticky-bar-call">📞 Anrufen</a>
+  <a href="anfrage.html" target="_blank" class="sticky-bar-btn sticky-bar-anfrage">Anfrage stellen →</a>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
@@ -2106,9 +2261,9 @@ footer {
       <div class="footer-col">
         <h4>Leistungen</h4>
         <ul class="footer-links">
-          <li><a href="#kaufen">Immobilien kaufen</a></li>
-          <li><a href="#verkaufen">Immobilien verkaufen</a></li>
-          <li><a href="#mieten">Immobilien mieten</a></li>
+          <li><a href="anfrage.html?flow=kaufen" target="_blank">Immobilien kaufen</a></li>
+          <li><a href="anfrage.html?flow=verkaufen" target="_blank">Immobilien verkaufen</a></li>
+          <li><a href="anfrage.html?flow=mieten" target="_blank">Immobilien mieten</a></li>
           <li><a href="#leistungen">Marktbewertung</a></li>
           <li><a href="#leistungen">Vermarktung</a></li>
         </ul>
