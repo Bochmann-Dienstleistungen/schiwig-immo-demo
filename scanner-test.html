@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scanner Test</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.card {
+  background: #111;
+  border: 1px solid rgba(201,169,110,.2);
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+}
+h1 { font-size: 18px; color: #C9A96E; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.sub { font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 28px; }
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  width: 100%; padding: 16px;
+  background: #C9A96E; color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 15px; font-weight: 600; letter-spacing: .06em;
+  cursor: pointer; position: relative; overflow: hidden;
+}
+.btn input {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 100px;
+}
+.status {
+  margin-top: 20px;
+  font-size: 13px;
+  color: rgba(255,255,255,.5);
+  text-align: center;
+  min-height: 20px;
+}
+.result {
+  margin-top: 20px;
+  display: none;
+}
+.result-title {
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: #C9A96E; margin-bottom: 12px;
+}
+.field { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+.field:last-child { border-bottom: none; }
+.field-lbl { font-size: 11px; color: rgba(255,255,255,.4); width: 130px; flex-shrink: 0; padding-top: 1px; }
+.field-val { font-size: 13px; color: #fff; word-break: break-all; }
+.field-val.empty { color: rgba(255,255,255,.2); font-style: italic; }
+.preview {
+  margin-top: 20px;
+  display: none;
+}
+.preview img {
+  width: 100%; border-radius: 6px; opacity: .6;
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>KI Scanner Test</h1>
+  <p class="sub">Gehaltszettel oder Ausweis fotografieren — KI extrahiert alle Felder</p>
+
+  <button class="btn" type="button">
+    📸 &nbsp;Dokument fotografieren
+    <input type="file" accept="image/*" capture="environment" id="fileInput" onchange="handleFile(this)">
+  </button>
+
+  <div class="status" id="status">Bereit</div>
+
+  <div class="preview" id="preview">
+    <img id="previewImg" src="" alt="Vorschau">
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-title">Erkannte Felder</div>
+    <div id="fields"></div>
+  </div>
+</div>
+
+<script>
+const WORKER = 'https://schiwig-scanner.freiraum-dienstleistungen.workers.dev';
+
+const LABELS = {
+  name_vorname:   'Name, Vorname',
+  geburtsdatum:   'Geburtsdatum',
+  geburtsort:     'Geburtsort',
+  adresse:        'Adresse',
+  telefon:        'Telefon',
+  beruf:          'Beruf',
+  arbeitgeber:    'Arbeitgeber',
+  nettoeinkommen: 'Nettoeinkommen',
+  email:          'E-Mail',
+};
+
+async function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Vorschau
+  const previewEl = document.getElementById('preview');
+  const previewImg = document.getElementById('previewImg');
+  previewEl.style.display = 'block';
+  previewImg.src = URL.createObjectURL(file);
+
+  setStatus('⏳ Bild wird vorbereitet …');
+
+  const b64 = await prepareImage(file);
+  setStatus('⏳ KI analysiert Dokument …');
+
+  try {
+    const r = await fetch(WORKER + '/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 512,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 }},
+            { type: 'text', text: `Analysiere dieses Dokument und extrahiere Daten für eine Mieter-Selbstauskunft.
+Antworte NUR mit einem JSON-Objekt, ohne Erklärungen, ohne Markdown-Blöcke:
+{"name_vorname":"Nachname, Vorname","geburtsdatum":"TT.MM.JJJJ","geburtsort":"","adresse":"Straße Nr, PLZ Ort","telefon":"","beruf":"","arbeitgeber":"","nettoeinkommen":"","email":""}
+Felder die nicht erkennbar sind als leeren String lassen.` }
+          ]
+        }]
+      })
+    });
+
+    if (!r.ok) throw new Error('API ' + r.status);
+    const j = await r.json();
+    const txt = j.content?.[0]?.text || '{}';
+    const clean = txt.replace(/```[\s\S]*?```/g, m => m.replace(/```\w*\n?/g,'')).replace(/```/g,'').trim();
+    const data = JSON.parse(clean);
+
+    showResult(data);
+    setStatus('✓ Fertig');
+  } catch(e) {
+    setStatus('⚠ Fehler: ' + e.message);
+  }
+}
+
+function showResult(data) {
+  const el = document.getElementById('result');
+  const fields = document.getElementById('fields');
+  el.style.display = 'block';
+  fields.innerHTML = Object.entries(LABELS).map(([k, lbl]) => {
+    const v = data[k];
+    return `<div class="field">
+      <div class="field-lbl">${lbl}</div>
+      <div class="field-val ${v ? '' : 'empty'}">${v || 'nicht erkannt'}</div>
+    </div>`;
+  }).join('');
+}
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+function prepareImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 900;
+      let w = img.naturalWidth || img.width;
+      let h = img.naturalHeight || img.height;
+      if (w > MAX || h > MAX) {
+        if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+        else        { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.88).split(',')[1]);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+</script>
+</body>
+</html>
