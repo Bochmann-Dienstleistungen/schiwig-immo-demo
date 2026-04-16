@@ -1246,7 +1246,7 @@ async function scanDocument(file, onDone) {
     const mime = 'image/jpeg'; // immer JPEG nach Canvas-Konvertierung
 
     const payload = {
-      model: 'claude-opus-4-6',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 512,
       messages: [{
         role: 'user',
@@ -1316,7 +1316,7 @@ function prepareImageForScan(file) {
     const img = new Image();
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
-      const MAX = 1200;
+      const MAX = 900;
       let w = img.naturalWidth  || img.width;
       let h = img.naturalHeight || img.height;
       if (w > MAX || h > MAX) {
