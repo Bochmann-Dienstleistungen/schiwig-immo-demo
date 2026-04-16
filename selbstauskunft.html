@@ -510,6 +510,7 @@ function renderStep() {
 
   const grid = document.createElement('div');
   grid.className = 'form-grid';
+  area.appendChild(grid); // erst ins DOM, dann rendern — getElementById findet Elemente
 
   switch(step) {
     case 0: renderObjekt(grid); break;
@@ -518,8 +519,6 @@ function renderStep() {
     case 3: renderFinanzen(grid); break;
     case 4: renderAbschluss(grid); break;
   }
-
-  area.appendChild(grid);
   area.appendChild(renderNavRow());
 }
 
