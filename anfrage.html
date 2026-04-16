@@ -498,6 +498,11 @@ input[type=range]:focus { border: none; outline: none; }
         <div class="persona-label">Ich möchte vermieten</div>
         <div class="persona-sub">Ich suche einen zuverlässigen Mieter</div>
       </div>
+      <div class="persona-card" onclick="startFlow('mieten')" style="grid-column:1/-1">
+        <div class="persona-icon">🏢</div>
+        <div class="persona-label">Ich suche eine Mietwohnung</div>
+        <div class="persona-sub">Ich möchte eine Wohnung oder ein Haus mieten</div>
+      </div>
     </div>
   </div>
 
@@ -563,7 +568,7 @@ const CFG = {
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
-let flow  = '';   // kaufen | verkaufen | erben | vermieten
+let flow  = '';   // kaufen | verkaufen | erben | vermieten | mieten
 let step  = 0;
 let D     = {};
 let scanContext = ''; // welches Dokument wird gerade gescannt
@@ -573,6 +578,7 @@ const FLOWS = {
   verkaufen: { steps: 3, label: 'Verkaufsanfrage' },
   erben:     { steps: 3, label: 'Erbschaft' },
   vermieten: { steps: 3, label: 'Vermieten' },
+  mieten:    { steps: 3, label: 'Mietanfrage' },
 };
 
 /* ═══════════════════════════════════════
@@ -637,6 +643,7 @@ function render() {
   if (flow === 'verkaufen') renderVerkaufen(grid);
   if (flow === 'erben')     renderErben(grid);
   if (flow === 'vermieten') renderVermieten(grid);
+  if (flow === 'mieten')    renderMieten(grid);
 
   // CTA
   const cta = document.createElement('div');
@@ -653,6 +660,23 @@ function render() {
 }
 
 /* ═══════════════════════════════════════
+   HELPER — AUSWEIS SCAN CARD (Step 0)
+═══════════════════════════════════════ */
+function ausweisScanner(g) {
+  g.innerHTML += `<div class="span2">
+    <button class="scan-card" onclick="handleScanCardClick(event,'ausweis','Personalausweis','Ausweis oder Visitenkarte fotografieren')" type="button">
+      <div class="scan-card-icon">🪪</div>
+      <div>
+        <div class="scan-card-title">Ausweis oder Visitenkarte scannen</div>
+        <div class="scan-card-sub">Felder werden automatisch ausgefüllt — spart Zeit</div>
+      </div>
+      <input type="file" accept="image/*" class="desktop-file" onchange="handleDesktopScan(this,'ausweis')">
+    </button>
+    <div class="scan-result-bar" id="scanner-result"></div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════
    FLOWS — KAUFEN
 ═══════════════════════════════════════ */
 function renderKaufen(g) {
@@ -661,6 +685,7 @@ function renderKaufen(g) {
     g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
     g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
     g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    ausweisScanner(g);
     g.innerHTML += `<div class="span2 field-wrap">
       <div class="field-label">Objekttyp <span>*</span></div>
       <div class="toggle-group" id="tg-objekttyp">
@@ -741,6 +766,7 @@ function renderVerkaufen(g) {
     g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
     g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
     g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    ausweisScanner(g);
     g.innerHTML += `<div class="span2 field-wrap">
       <div class="field-label">Objekttyp <span>*</span></div>
       <div class="toggle-group">
@@ -816,6 +842,7 @@ function renderErben(g) {
     g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
     g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
     g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    ausweisScanner(g);
     g.innerHTML += `<div class="span2 field-wrap">
       <div class="field-label">Erbsituation <span>*</span></div>
       <div class="toggle-group">
@@ -891,6 +918,7 @@ function renderVermieten(g) {
     g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
     g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
     g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    ausweisScanner(g);
     g.innerHTML += `<div class="span2 field-wrap">
       <div class="field-label">Objekttyp <span>*</span></div>
       <div class="toggle-group">
@@ -933,6 +961,67 @@ function renderVermieten(g) {
     g.innerHTML += `<div class="span2 field-wrap">
       <div class="field-label">Anmerkungen</div>
       <textarea data-key="anmerkungen" placeholder="Besonderheiten, Wünsche, Fragen…">${D.anmerkungen||''}</textarea>
+    </div>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   FLOWS — MIETEN
+═══════════════════════════════════════ */
+function renderMieten(g) {
+  if (step === 0) {
+    heading(g, 'Mietanfrage', 'Ihre Kontaktdaten', 'Wir finden den passenden Mietwohnraum für Sie.');
+    g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
+    g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
+    g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    ausweisScanner(g);
+  }
+  if (step === 1) {
+    heading(g, 'Mietanfrage', 'Ihr Suchprofil', 'Was sind Ihre Vorstellungen?');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Objekttyp <span>*</span></div>
+      <div class="toggle-group">
+        ${['Wohnung','Haus','WG-Zimmer','Gewerbe'].map(v => `<button class="toggle-btn${D.objekttyp===v?' active':''}" onclick="toggle('objekttyp','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Zimmer</div>
+      ${sel('zimmer', ['1 Zimmer','2 Zimmer','3 Zimmer','4 Zimmer','5+ Zimmer'])}
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Größe (m²)</div>
+      ${sel('groesse', ['< 40 m²','40–60 m²','60–80 m²','80–100 m²','> 100 m²'])}
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Maximale Kaltmiete (€/Mo) <span>*</span></div>
+      <div class="range-wrap">
+        <div class="range-display" id="miete-display">${formatEur(D.maxmiete || 700)}</div>
+        <input type="range" id="inp-miete" min="200" max="2000" step="50" value="${D.maxmiete||700}" oninput="D.maxmiete=+this.value;document.getElementById('miete-display').textContent=formatEur(D.maxmiete)">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>200 €</span><span>2.000 €</span></div>
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Gewünschte Lage</div>
+      ${sel('lage', ['Zwickau Innenstadt','Zwickau Randlage','Zwickau Umland','Egal'])}
+    </div>`;
+  }
+  if (step === 2) {
+    heading(g, 'Mietanfrage', 'Details & Zeitplan', 'Fast geschafft — noch ein paar letzte Angaben.');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Gewünschter Einzug <span>*</span></div>
+      <div class="toggle-group">
+        ${['Sofort','In 1 Monat','In 3 Monaten','In 6 Monaten','Noch flexibel'].map(v => `<button class="toggle-btn${D.einzug===v?' active':''}" onclick="toggle('einzug','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Haustiere?</div>
+      <div class="toggle-group">
+        ${['Keine','Kleintiere','Katze','Hund'].map(v => `<button class="toggle-btn${D.haustiere===v?' active':''}" onclick="toggle('haustiere','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Anmerkungen</div>
+      <textarea data-key="anmerkungen" placeholder="Besonderheiten, barrierefreiheit, Aufzug, Balkon…">${D.anmerkungen||''}</textarea>
     </div>`;
   }
 }
@@ -993,6 +1082,12 @@ function bindInputs() {
   });
 }
 
+// Auto-start flow from URL param: anfrage.html?flow=mieten
+(function() {
+  const p = new URLSearchParams(location.search).get('flow');
+  if (p && FLOWS[p]) startFlow(p);
+})();
+
 /* ═══════════════════════════════════════
    VALIDATION
 ═══════════════════════════════════════ */
@@ -1016,6 +1111,11 @@ const REQUIRED = {
     ['vorname','nachname','email','telefon','objekttyp','objektadresse'],
     [],
     ['pruefung'],
+  ],
+  mieten: [
+    ['vorname','nachname','email','telefon'],
+    ['objekttyp'],
+    ['einzug'],
   ],
 };
 
@@ -1056,6 +1156,9 @@ function calcPriority() {
   }
   if (flow === 'vermieten') {
     return D.verfuegbar === 'Sofort' ? 'heiss' : 'warm';
+  }
+  if (flow === 'mieten') {
+    return (D.einzug === 'Sofort' || D.einzug === 'In 1 Monat') ? 'heiss' : 'warm';
   }
   return 'warm';
 }
@@ -1150,6 +1253,7 @@ function buildSummaryFields() {
     erbsituation:'Erbsituation', wunsch:'Wunsch', zeitdruck:'Zeitdruck',
     wohnflaeche:'Wohnfläche (m²)', kaltmiete:'Kaltmiete/Mo',
     pruefung:'Mieterprüfung', verfuegbar:'Verfügbar',
+    maxmiete:'Max. Kaltmiete', einzug:'Einzugstermin', haustiere:'Haustiere', lage:'Lage',
   };
   return Object.entries(MAP)
     .filter(([k]) => D[k])
@@ -1157,6 +1261,7 @@ function buildSummaryFields() {
       let v = D[k];
       if (k === 'budget' || k === 'eigenkapital') v = formatEur(+v);
       if (k === 'kaltmiete') v = formatEur(+v) + '/Mo';
+      if (k === 'maxmiete') v = formatEur(+v) + '/Mo';
       if (k === 'wohnflaeche') v = v + ' m²';
       return [l, v];
     });
@@ -1238,7 +1343,8 @@ function handleScanCapture(input) {
 
 async function scanDocument(file, ctx, onDone) {
   const prompts = {
-    gehaltszettel: `Analysiere diesen Gehaltsnachweis. Antworte NUR mit JSON, ohne Markdown:\n{"name_vorname":"Nachname, Vorname","beruf":"","arbeitgeber":"","nettoeinkommen":"","adresse":""}`,
+    ausweis:       `Analysiere diesen Personalausweis oder diese Visitenkarte. Antworte NUR mit JSON, ohne Markdown:\n{"vorname":"","nachname":"","email":"","telefon":"","adresse":"Straße Nr, PLZ Ort"}\nFelder die nicht erkennbar sind als leeren String lassen.`,
+    gehaltszettel: `Analysiere diesen Gehaltsnachweis. Antworte NUR mit JSON, ohne Markdown:\n{"vorname":"","nachname":"","beruf":"","arbeitgeber":"","nettoeinkommen":"","adresse":""}`,
     grundbuch:     `Analysiere dieses Dokument (Grundbuchauszug/Energieausweis). Antworte NUR mit JSON, ohne Markdown:\n{"objektadresse":"Straße Nr, PLZ Ort","wohnflaeche":"","baujahr":"","eigentümer":""}`,
     erbschein:     `Analysiere dieses Dokument (Erbschein/Testament). Antworte NUR mit JSON, ohne Markdown:\n{"erblasser":"","erben":"","objektadresse":"","erbanteil":""}`,
   };
