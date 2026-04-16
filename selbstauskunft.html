@@ -786,9 +786,9 @@ async function psInit() {
         raw:          u
       }));
 
-    dd.classList.remove('open');
     psFiltered = [...psUnits];
     psRenderList('');
+    dd.classList.add('open'); // sofort zeigen nach Laden
   } catch(e) {
     showPsError('Verbindung zum CRM fehlgeschlagen. Bitte manuell eingeben.', true);
   }
