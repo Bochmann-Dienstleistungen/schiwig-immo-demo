@@ -817,45 +817,50 @@ function fieldPhone(label, key, placeholder, req=false) {
   </div>`;
 }
 
-// Geburtsdatum mit Jahres-Dropdown
+// Geburtsdatum — drei Dropdowns: Tag, Monat, Jahr
 function fieldDate(label, dateKey, yearKey, half=false) {
-  const val = escAttr(D[dateKey]||'');
-  const yr  = D[yearKey] || '';
+  // bestehenden Wert zerlegen (Format TT.MM.JJJJ)
+  const parts = (D[dateKey]||'').split('.');
+  const dd = parts[0]||'', mm = parts[1]||'', yyyy = parts[2]||D[yearKey]||'';
+
+  const days   = Array.from({length:31},(_,i)=>String(i+1).padStart(2,'0'));
+  const months = ['01 – Januar','02 – Februar','03 – März','04 – April',
+                  '05 – Mai','06 – Juni','07 – Juli','08 – August',
+                  '09 – September','10 – Oktober','11 – November','12 – Dezember'];
   const curYear = new Date().getFullYear();
-  const years = Array.from({length: curYear-1939}, (_,i) => curYear-18-i);
-  const opts  = years.map(y =>
-    `<option value="${y}" ${y==yr?'selected':''}>${y}</option>`
-  ).join('');
+  const years  = Array.from({length: curYear-1939}, (_,i) => curYear-18-i);
+
+  const dayOpts   = days.map(d   => `<option value="${d}"   ${d===dd?'selected':''}>${d}</option>`).join('');
+  const monthOpts = months.map(m => `<option value="${m.slice(0,2)}" ${m.slice(0,2)===mm?'selected':''}>${m}</option>`).join('');
+  const yearOpts  = years.map(y  => `<option value="${y}"   ${String(y)===yyyy?'selected':''}>${y}</option>`).join('');
+
   return `<div class="${half?'':'span2'}" data-field="${dateKey}">
     <div class="field">
       <label class="field-label">${label}</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input class="field-input" id="fi-${dateKey}" type="text" value="${val}"
-          placeholder="TT.MM.JJJJ" style="flex:1"
-          oninput="D['${dateKey}']=this.value;syncYearSelect(this.value)"
-          onchange="D['${dateKey}']=this.value">
-        <select class="field-input" id="yr-select" style="width:100px;padding:10px 8px"
-          onchange="D['${yearKey}']=this.value;syncDateFromYear(this.value)">
-          <option value="">Jahr</option>
-          ${opts}
+      <div style="display:grid;grid-template-columns:72px 1fr 90px;gap:6px">
+        <select class="field-input" id="bd-day"
+          style="padding:10px 6px" onchange="syncBirthdate()">
+          <option value="">Tag</option>${dayOpts}
+        </select>
+        <select class="field-input" id="bd-month"
+          style="padding:10px 6px" onchange="syncBirthdate()">
+          <option value="">Monat</option>${monthOpts}
+        </select>
+        <select class="field-input" id="bd-year"
+          style="padding:10px 6px" onchange="syncBirthdate()">
+          <option value="">Jahr</option>${yearOpts}
         </select>
       </div>
     </div>
   </div>`;
 }
 
-function syncYearSelect(val) {
-  const m = val.match(/(\d{4})$/);
-  const sel = document.getElementById('yr-select');
-  if (m && sel) { sel.value = m[1]; D.geburtsjahr = m[1]; }
-}
-function syncDateFromYear(yr) {
-  const inp = document.getElementById('fi-geburtsdatum');
-  if (!inp) return;
-  const parts = inp.value.split('.');
-  if (parts.length === 3) { parts[2] = yr; inp.value = parts.join('.'); D.geburtsdatum = inp.value; }
-  else if (!inp.value) { inp.value = '__.__.' + yr; }
-  D.geburtsjahr = yr;
+function syncBirthdate() {
+  const d = document.getElementById('bd-day')?.value   || '';
+  const m = document.getElementById('bd-month')?.value || '';
+  const y = document.getElementById('bd-year')?.value  || '';
+  D.geburtsdatum = [d,m,y].filter(Boolean).join('.');
+  D.geburtsjahr  = y;
 }
 
 function toggle(label, key, opts) {
