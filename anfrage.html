@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anfrage — SCHIWIG Immobilien</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #0A0A0A;
+  --bg2:   #111111;
+  --bg3:   #161616;
+  --white: #FFFFFF;
+  --gold:  #C9A96E;
+  --gold-l:#F0E0BE;
+  --gold-d:#A07840;
+  --g100:  #F2F1EE;
+  --g400:  #B0ADA5;
+  --g600:  #6B6860;
+  --g800:  #3A3834;
+  --black: #0A0A0A;
+  --sans:  'DM Sans', sans-serif;
+  --rad:   10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ────────────────────────────── */
+.sa-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 24px;
+  background: var(--bg2);
+  border-bottom: 1px solid rgba(201,169,110,.12);
+  position: sticky; top: 0; z-index: 100;
+}
+.sa-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.sa-logo-mark {
+  width: 32px; height: 32px; background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--black);
+}
+.sa-logo-name {
+  font-size: 13px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--white);
+}
+.sa-title-block { margin-left: auto; text-align: right; }
+.sa-title-eye {
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold); font-weight: 600;
+}
+.sa-title {
+  font-size: 14px; font-weight: 500; color: rgba(255,255,255,.6);
+}
+
+/* ─── WRAPPER ───────────────────────────── */
+.wrapper {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* ─── PERSONA SELECTION ─────────────────── */
+.persona-intro {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.persona-intro h1 {
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  margin-bottom: 10px;
+}
+.persona-intro p {
+  color: var(--g400);
+  font-size: 14px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.persona-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.persona-card {
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: var(--rad);
+  padding: 24px 20px;
+  cursor: pointer;
+  transition: border-color .2s, transform .15s;
+  text-align: center;
+}
+.persona-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.persona-card:active { transform: scale(.98); }
+.persona-icon { font-size: 2.2rem; margin-bottom: 12px; }
+.persona-label {
+  font-size: 15px; font-weight: 600; margin-bottom: 4px;
+}
+.persona-sub {
+  font-size: 11px; color: var(--g600); line-height: 1.5;
+}
+
+/* ─── PROGRESS BAR ──────────────────────── */
+.progress-wrap {
+  margin-bottom: 32px;
+}
+.progress-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px;
+}
+.progress-back {
+  background: none; border: none; color: var(--gold);
+  font-size: 12px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; cursor: pointer; padding: 4px 0;
+}
+.progress-label {
+  font-size: 11px; color: var(--g600);
+  letter-spacing: .08em; text-transform: uppercase;
+  margin-left: auto;
+}
+.progress-bar-track {
+  height: 2px;
+  background: rgba(255,255,255,.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+
+/* ─── STEP HEADING ──────────────────────── */
+.step-heading {
+  margin-bottom: 24px;
+}
+.step-eye {
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold); font-weight: 600; margin-bottom: 6px;
+}
+.step-title {
+  font-size: 20px; font-weight: 600; letter-spacing: -.01em;
+}
+.step-sub {
+  font-size: 13px; color: var(--g400); margin-top: 4px;
+}
+
+/* ─── FORM GRID ─────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.span2 { grid-column: 1 / -1; }
+
+/* ─── FIELD ─────────────────────────────── */
+.field-wrap { display: flex; flex-direction: column; gap: 6px; }
+.field-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--g400);
+}
+.field-label span { color: var(--gold); margin-left: 2px; }
+input[type=text], input[type=email], input[type=tel],
+input[type=number], select, textarea {
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color .2s;
+  appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold);
+}
+input::placeholder, textarea::placeholder { color: var(--g600); }
+select option { background: #1a1a1a; }
+textarea { resize: vertical; min-height: 80px; }
+
+/* ─── TOGGLE ────────────────────────────── */
+.toggle-group {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.toggle-btn {
+  padding: 8px 16px;
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px;
+  color: var(--g400);
+  font-size: 12px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; cursor: pointer;
+  transition: all .15s;
+}
+.toggle-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--black);
+}
+
+/* ─── RANGE SLIDER ──────────────────────── */
+.range-wrap { display: flex; flex-direction: column; gap: 8px; }
+.range-display {
+  font-size: 18px; font-weight: 600; color: var(--gold);
+  letter-spacing: -.02em;
+}
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  padding: 0;
+  border: none;
+  width: 100%;
+  height: 32px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: rgba(255,255,255,.12);
+  border-radius: 3px;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  background: var(--gold);
+  border-radius: 50%;
+  margin-top: -8px;
+  cursor: pointer;
+}
+input[type=range]:focus { border: none; outline: none; }
+
+/* ─── PRIORITY BADGE ────────────────────── */
+.priority-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.priority-badge.heiss { background: rgba(220,60,60,.15); color: #ff6b6b; border: 1px solid rgba(220,60,60,.3); }
+.priority-badge.warm  { background: rgba(201,169,110,.12); color: var(--gold); border: 1px solid rgba(201,169,110,.25); }
+.priority-badge.kalt  { background: rgba(255,255,255,.05); color: var(--g400); border: 1px solid rgba(255,255,255,.1); }
+
+/* ─── SCANNER CARD ──────────────────────── */
+.scan-card {
+  display: none;
+  align-items: center; gap: 16px;
+  background: var(--black); color: var(--white);
+  border: 1px solid rgba(201,169,110,.2);
+  border-radius: var(--rad); padding: 16px 20px;
+  cursor: pointer; width: 100%; text-align: left;
+  transition: opacity .2s;
+}
+@media (max-width: 768px) {
+  .scan-card { display: flex; }
+}
+.scan-card:active { opacity: .8; }
+.scan-card-icon {
+  width: 42px; height: 42px; background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; flex-shrink: 0;
+}
+.scan-card-title { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.scan-card-sub { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 2px; }
+.scan-result-bar {
+  display: none;
+  margin-top: 10px; padding: 10px 14px;
+  background: rgba(201,169,110,.07); border-left: 2px solid var(--gold);
+  font-size: 12px; color: var(--gold);
+}
+
+/* ─── SCAN OVERLAY ──────────────────────── */
+.scan-overlay {
+  display: none; position: fixed; inset: 0; z-index: 99999;
+  background: #000; flex-direction: column;
+}
+.scan-overlay.open { display: flex; }
+.scan-ov-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.scan-ov-back {
+  background: transparent; border: none; color: var(--gold);
+  font-size: 13px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; cursor: pointer; padding: 8px 0;
+}
+.scan-ov-title {
+  font-size: 13px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--white);
+}
+.scan-ov-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 2rem; gap: 2rem;
+}
+.scan-ov-icon { font-size: 5rem; opacity: .7; }
+.scan-ov-desc {
+  text-align: center; color: rgba(255,255,255,.55);
+  font-size: 14px; line-height: 1.7; max-width: 280px;
+}
+.scan-ov-desc strong { color: var(--white); }
+.scan-ov-btn {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--gold); color: var(--white);
+  border: none; border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 14px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.scan-ov-btn input {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 100px;
+}
+.scan-ov-status {
+  font-size: 12px; color: rgba(255,255,255,.45);
+  text-align: center; min-height: 20px;
+}
+
+/* ─── CTA BUTTON ────────────────────────── */
+.cta-row {
+  margin-top: 28px;
+  display: flex; gap: 12px; align-items: center;
+}
+.btn-primary {
+  background: var(--gold); color: var(--black);
+  border: none; border-radius: 8px;
+  padding: 14px 28px;
+  font-family: var(--sans);
+  font-size: 13px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; cursor: pointer;
+  transition: opacity .2s;
+  flex: 1;
+}
+.btn-primary:hover { opacity: .9; }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.val-error {
+  font-size: 11px; color: #ff6b6b;
+  margin-top: 6px; display: none;
+}
+.val-error.show { display: block; }
+
+/* ─── DONE SCREEN ───────────────────────── */
+.done-screen {
+  display: none;
+  text-align: center;
+  padding: 48px 24px;
+}
+.done-screen.show { display: block; }
+.done-icon {
+  width: 56px; height: 56px;
+  background: rgba(201,169,110,.12);
+  border: 1px solid rgba(201,169,110,.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.6rem;
+}
+.done-title {
+  font-size: 22px; font-weight: 600; margin-bottom: 8px;
+}
+.done-sub {
+  color: var(--g400); font-size: 14px; margin-bottom: 28px;
+  line-height: 1.7;
+}
+.done-priority-wrap {
+  margin-bottom: 24px;
+}
+.done-summary {
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: var(--rad);
+  padding: 20px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+.done-summary-title {
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 14px;
+}
+.done-row {
+  display: flex; gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  font-size: 13px;
+}
+.done-row:last-child { border-bottom: none; }
+.done-row-lbl { color: var(--g400); width: 140px; flex-shrink: 0; }
+.done-row-val { color: var(--white); font-weight: 500; }
+.btn-wa {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: #25D366; color: #fff;
+  border: none; border-radius: 8px;
+  padding: 14px 28px;
+  font-family: var(--sans);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; width: 100%; margin-bottom: 12px;
+  text-decoration: none;
+}
+.btn-reset {
+  background: none; border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px; padding: 12px 24px;
+  color: var(--g400); font-family: var(--sans);
+  font-size: 13px; cursor: pointer; width: 100%;
+}
+.btn-reset:hover { border-color: var(--g400); color: var(--white); }
+
+/* ─── STATUS ────────────────────────────── */
+.status-bar {
+  font-size: 12px; color: var(--g600);
+  margin-top: 12px; text-align: center; min-height: 18px;
+}
+.status-bar.ok  { color: var(--gold); }
+.status-bar.err { color: #ff6b6b; }
+
+@media (max-width: 480px) {
+  .persona-grid { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .span2 { grid-column: 1; }
+  .wrapper { padding: 24px 16px 80px; }
+}
+</style>
+</head>
+<body>
+
+<header class="sa-header">
+  <a href="index.html" class="sa-logo">
+    <div class="sa-logo-mark">S</div>
+    <div class="sa-logo-name">Schiwig</div>
+  </a>
+  <div class="sa-title-block">
+    <div class="sa-title-eye">Kostenlos & unverbindlich</div>
+    <div class="sa-title">Immobilien-Anfrage</div>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- ── PERSONA AUSWAHL ──────────────────── -->
+  <div id="persona-screen">
+    <div class="persona-intro">
+      <h1>Was ist Ihr Anliegen?</h1>
+      <p>Wählen Sie Ihre Situation — wir führen Sie in 3 Minuten durch alle relevanten Fragen.</p>
+    </div>
+    <div class="persona-grid">
+      <div class="persona-card" onclick="startFlow('kaufen')">
+        <div class="persona-icon">🏠</div>
+        <div class="persona-label">Ich möchte kaufen</div>
+        <div class="persona-sub">Ich suche eine Immobilie zum Erwerb</div>
+      </div>
+      <div class="persona-card" onclick="startFlow('verkaufen')">
+        <div class="persona-icon">💰</div>
+        <div class="persona-label">Ich möchte verkaufen</div>
+        <div class="persona-sub">Ich habe eine Immobilie zum Verkauf</div>
+      </div>
+      <div class="persona-card" onclick="startFlow('erben')">
+        <div class="persona-icon">📜</div>
+        <div class="persona-label">Ich habe geerbt</div>
+        <div class="persona-sub">Ich möchte eine geerbte Immobilie verwalten oder verkaufen</div>
+      </div>
+      <div class="persona-card" onclick="startFlow('vermieten')">
+        <div class="persona-icon">🔑</div>
+        <div class="persona-label">Ich möchte vermieten</div>
+        <div class="persona-sub">Ich suche einen zuverlässigen Mieter</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLOW SCREEN ──────────────────────── -->
+  <div id="flow-screen" style="display:none">
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <button class="progress-back" onclick="goBack()">← Zurück</button>
+        <span class="progress-label" id="progress-label">Schritt 1 / 3</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width:33%"></div>
+      </div>
+    </div>
+    <div id="step-area"></div>
+    <div class="status-bar" id="status-bar"></div>
+  </div>
+
+  <!-- ── DONE SCREEN ──────────────────────── -->
+  <div class="done-screen" id="done-screen">
+    <div class="done-icon">✓</div>
+    <div class="done-title" id="done-title">Anfrage eingegangen</div>
+    <div class="done-sub" id="done-sub">Lukas Schiwig meldet sich in der Regel innerhalb von 2 Stunden bei Ihnen.</div>
+    <div class="done-priority-wrap" id="done-priority"></div>
+    <div class="done-summary" id="done-summary"></div>
+    <a class="btn-wa" id="done-wa" href="#" target="_blank">💬 &nbsp;Direkt auf WhatsApp schreiben</a>
+    <button class="btn-reset" onclick="resetAll()">Neue Anfrage starten</button>
+  </div>
+
+</div>
+
+<!-- Scanner Overlay -->
+<div class="scan-overlay" id="scanOverlay">
+  <div class="scan-ov-header">
+    <button class="scan-ov-back" onclick="closeScanner()">← Zurück</button>
+    <span class="scan-ov-title">Dokument scannen</span>
+  </div>
+  <div class="scan-ov-body">
+    <div class="scan-ov-icon" id="scan-ov-icon">📄</div>
+    <div class="scan-ov-desc" id="scan-ov-desc">
+      Halten Sie das Dokument gut lesbar vor die Kamera.<br><br>
+      Die KI erkennt alle Felder automatisch.<br><br>
+      <span style="font-size:11px;opacity:.5;">Das Foto wird nur zur Analyse übertragen und nicht gespeichert. <a href="datenschutz.html" target="_blank" style="color:var(--gold)">Datenschutz</a></span>
+    </div>
+    <button class="scan-ov-btn" type="button">
+      📸 &nbsp;Jetzt fotografieren
+      <input type="file" accept="image/*" capture="environment" onchange="handleScanCapture(this)">
+    </button>
+    <div class="scan-ov-status" id="scan-ov-status"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════ */
+const CFG = {
+  WORKER:       'https://schiwig-scanner.freiraum-dienstleistungen.workers.dev',
+  PROPSTACK_API:'https://schiwig-scanner.freiraum-dienstleistungen.workers.dev/propstack',
+  WA_NUMBER:    '4915735792768',
+};
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let flow  = '';   // kaufen | verkaufen | erben | vermieten
+let step  = 0;
+let D     = {};
+let scanContext = ''; // welches Dokument wird gerade gescannt
+
+const FLOWS = {
+  kaufen:    { steps: 3, label: 'Kaufanfrage' },
+  verkaufen: { steps: 3, label: 'Verkaufsanfrage' },
+  erben:     { steps: 3, label: 'Erbschaft' },
+  vermieten: { steps: 3, label: 'Vermieten' },
+};
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function startFlow(f) {
+  flow = f;
+  step = 0;
+  D    = { flow: f };
+  document.getElementById('persona-screen').style.display = 'none';
+  document.getElementById('flow-screen').style.display    = 'block';
+  render();
+}
+
+function goBack() {
+  if (step === 0) {
+    document.getElementById('flow-screen').style.display   = 'none';
+    document.getElementById('persona-screen').style.display = 'block';
+  } else {
+    step--;
+    render();
+  }
+}
+
+function nextStep() {
+  if (!validate()) return;
+  const total = FLOWS[flow].steps;
+  if (step < total - 1) {
+    step++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    submit();
+  }
+}
+
+function resetAll() {
+  flow = ''; step = 0; D = {};
+  document.getElementById('done-screen').classList.remove('show');
+  document.getElementById('persona-screen').style.display = 'block';
+  document.getElementById('flow-screen').style.display    = 'none';
+  setStatus('');
+}
+
+/* ═══════════════════════════════════════
+   RENDER
+═══════════════════════════════════════ */
+function render() {
+  const total = FLOWS[flow].steps;
+  const pct   = Math.round(((step + 1) / total) * 100);
+  document.getElementById('progress-label').textContent = `Schritt ${step + 1} von ${total}`;
+  document.getElementById('progress-fill').style.width  = pct + '%';
+
+  const area = document.getElementById('step-area');
+  area.innerHTML = '';
+
+  const grid = document.createElement('div');
+  grid.className = 'form-grid';
+  area.appendChild(grid);
+
+  if (flow === 'kaufen')    renderKaufen(grid);
+  if (flow === 'verkaufen') renderVerkaufen(grid);
+  if (flow === 'erben')     renderErben(grid);
+  if (flow === 'vermieten') renderVermieten(grid);
+
+  // CTA
+  const cta = document.createElement('div');
+  cta.className = 'cta-row';
+  const isLast = step === FLOWS[flow].steps - 1;
+  cta.innerHTML = `<button class="btn-primary" onclick="nextStep()">${isLast ? 'ANFRAGE ABSENDEN' : 'WEITER →'}</button>`;
+  area.appendChild(cta);
+
+  const errEl = document.createElement('div');
+  errEl.className = 'val-error'; errEl.id = 'val-error';
+  area.appendChild(errEl);
+
+  bindInputs();
+}
+
+/* ═══════════════════════════════════════
+   FLOWS — KAUFEN
+═══════════════════════════════════════ */
+function renderKaufen(g) {
+  if (step === 0) {
+    heading(g, 'Kaufanfrage', 'Ihr Suchprofil', 'Was suchen Sie? Je genauer, desto schneller finden wir das passende Objekt.');
+    g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
+    g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
+    g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Objekttyp <span>*</span></div>
+      <div class="toggle-group" id="tg-objekttyp">
+        ${['Wohnung','Haus','Grundstück','Gewerbe'].map(v => `<button class="toggle-btn${D.objekttyp===v?' active':''}" onclick="toggle('objekttyp','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Gewünschte Lage</div>
+      ${sel('lage', ['Zwickau','Zwickau Umland','Beides / flexibel'])}
+    </div>`;
+  }
+  if (step === 1) {
+    heading(g, 'Kaufanfrage', 'Budget & Finanzierung', 'Diese Angaben helfen uns, nur passende Objekte vorzuschlagen.');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Budget (Kaufpreis) <span>*</span></div>
+      <div class="range-wrap">
+        <div class="range-display" id="budget-display">${formatEur(D.budget || 200000)}</div>
+        <input type="range" id="inp-budget" min="50000" max="800000" step="10000" value="${D.budget||200000}" oninput="D.budget=+this.value;document.getElementById('budget-display').textContent=formatEur(D.budget)">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--g600)"><span>50.000 €</span><span>800.000 €</span></div>
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Eigenkapital</div>
+      <div class="range-wrap">
+        <div class="range-display" id="ek-display">${formatEur(D.eigenkapital || 50000)}</div>
+        <input type="range" id="inp-ek" min="0" max="400000" step="5000" value="${D.eigenkapital||50000}" oninput="D.eigenkapital=+this.value;document.getElementById('ek-display').textContent=formatEur(D.eigenkapital)">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--g600)"><span>0 €</span><span>400.000 €</span></div>
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Finanzierungsstand <span>*</span></div>
+      <div class="toggle-group">
+        ${['Noch nicht begonnen','Bankgespräch läuft','Finanzierung steht'].map(v => `<button class="toggle-btn${D.finanzierung===v?' active':''}" onclick="toggle('finanzierung','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    // Mobile: Gehaltszettel scannen
+    g.innerHTML += `<div class="span2">
+      <button class="scan-card" onclick="openScanner('gehaltszettel','Gehaltsnachweis scannen','Gehaltszettel für automatische Bonitätsprüfung fotografieren')" type="button">
+        <div class="scan-card-icon">📸</div>
+        <div>
+          <div class="scan-card-title">Gehaltsnachweis scannen</div>
+          <div class="scan-card-sub">KI prüft Ihre Bonität automatisch</div>
+        </div>
+      </button>
+      <div class="scan-result-bar" id="scanner-result"></div>
+    </div>`;
+  }
+  if (step === 2) {
+    heading(g, 'Kaufanfrage', 'Details & Zeitplan', 'Fast geschafft — noch ein paar letzte Angaben.');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Wann möchten Sie kaufen? <span>*</span></div>
+      <div class="toggle-group">
+        ${['Sofort','In 3 Monaten','In 6 Monaten','Langfristig'].map(v => `<button class="toggle-btn${D.zeitrahmen===v?' active':''}" onclick="toggle('zeitrahmen','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Gewünschte Größe (m²)</div>
+      ${sel('groesse', ['< 60 m²','60–90 m²','90–120 m²','> 120 m²'])}
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Zimmer</div>
+      ${sel('zimmer', ['1–2 Zimmer','3 Zimmer','4 Zimmer','5+ Zimmer'])}
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Besondere Wünsche</div>
+      <textarea data-key="wuensche" placeholder="Garten, Garage, Erdgeschoss, barrierefrei…">${D.wuensche||''}</textarea>
+    </div>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   FLOWS — VERKAUFEN
+═══════════════════════════════════════ */
+function renderVerkaufen(g) {
+  if (step === 0) {
+    heading(g, 'Verkaufsanfrage', 'Kontakt & Objekt', 'Erzählen Sie uns von Ihrer Immobilie.');
+    g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
+    g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
+    g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Objekttyp <span>*</span></div>
+      <div class="toggle-group">
+        ${['Wohnung','Einfamilienhaus','Mehrfamilienhaus','Grundstück','Gewerbe'].map(v => `<button class="toggle-btn${D.objekttyp===v?' active':''}" onclick="toggle('objekttyp','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += fieldFull(`<div class="field-wrap"><div class="field-label">Adresse des Objekts <span>*</span></div><input type="text" data-key="objektadresse" placeholder="Straße, Hausnummer, PLZ Ort" value="${D.objektadresse||''}"></div>`);
+  }
+  if (step === 1) {
+    heading(g, 'Verkaufsanfrage', 'Objekt-Details', 'Je mehr wir wissen, desto besser können wir bewerten.');
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Baujahr</div>
+      ${sel('baujahr', ['Vor 1960','1960–1990','1990–2010','Nach 2010','Neubau'])}
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Zustand</div>
+      ${sel('zustand', ['Renovierungsbedürftig','Gepflegt','Teilsaniert','Vollsaniert','Neubau'])}
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Wohnfläche (m²)</div>
+      <input type="number" data-key="wohnflaeche" placeholder="z.B. 110" value="${D.wohnflaeche||''}">
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Preisvorstellung (€)</div>
+      <input type="number" data-key="preisvorstellung" placeholder="z.B. 250000" value="${D.preisvorstellung||''}">
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Warum verkaufen Sie? <span>*</span></div>
+      <div class="toggle-group">
+        ${['Umzug','Scheidung','Erbschaft','Finanzielle Gründe','Kapitalanlage aufgelöst','Sonstiges'].map(v => `<button class="toggle-btn${D.verkaufgrund===v?' active':''}" onclick="toggle('verkaufgrund','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    // Scanner für Grundbuchauszug
+    g.innerHTML += `<div class="span2">
+      <button class="scan-card" onclick="openScanner('grundbuch','Grundbuchauszug scannen','Grundbuchauszug oder Baupläne fotografieren')" type="button">
+        <div class="scan-card-icon">📋</div>
+        <div>
+          <div class="scan-card-title">Unterlagen scannen</div>
+          <div class="scan-card-sub">Grundbuchauszug oder Energieausweis</div>
+        </div>
+      </button>
+      <div class="scan-result-bar" id="scanner-result"></div>
+    </div>`;
+  }
+  if (step === 2) {
+    heading(g, 'Verkaufsanfrage', 'Zeitplan & Erwartungen', 'Damit wir den Verkaufsprozess optimal planen können.');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Wann möchten Sie verkaufen? <span>*</span></div>
+      <div class="toggle-group">
+        ${['So schnell wie möglich','In 3–6 Monaten','In 6–12 Monaten','Noch offen'].map(v => `<button class="toggle-btn${D.zeitrahmen===v?' active':''}" onclick="toggle('zeitrahmen','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Sind noch Schulden auf dem Objekt?</div>
+      <div class="toggle-group">
+        ${['Nein, schuldenfrei','Ja, laufendes Darlehen','Weiß ich nicht'].map(v => `<button class="toggle-btn${D.schulden===v?' active':''}" onclick="toggle('schulden','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Anmerkungen</div>
+      <textarea data-key="anmerkungen" placeholder="Besonderheiten, Fragen, Wünsche…">${D.anmerkungen||''}</textarea>
+    </div>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   FLOWS — ERBEN
+═══════════════════════════════════════ */
+function renderErben(g) {
+  if (step === 0) {
+    heading(g, 'Erbschaft', 'Kontakt & Situation', 'Wir helfen Ihnen diskret und kompetent weiter.');
+    g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
+    g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
+    g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Erbsituation <span>*</span></div>
+      <div class="toggle-group">
+        ${['Alleinerbe','Erbengemeinschaft (2 Personen)','Erbengemeinschaft (3+ Personen)','Noch unklar'].map(v => `<button class="toggle-btn${D.erbsituation===v?' active':''}" onclick="toggle('erbsituation','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Objekttyp <span>*</span></div>
+      <div class="toggle-group">
+        ${['Wohnung','Haus','Grundstück','Mehrfamilienhaus','Sonstiges'].map(v => `<button class="toggle-btn${D.objekttyp===v?' active':''}" onclick="toggle('objekttyp','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+  if (step === 1) {
+    heading(g, 'Erbschaft', 'Objekt & Zustand', 'Was wissen Sie bereits über die Immobilie?');
+    g.innerHTML += fieldFull(`<div class="field-wrap"><div class="field-label">Adresse des Objekts</div><input type="text" data-key="objektadresse" placeholder="Straße, PLZ Ort" value="${D.objektadresse||''}"></div>`);
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Geschätzter Zustand</div>
+      ${sel('zustand', ['Unbekannt','Renovierungsbedürftig','Bewohnbar','Gepflegt'])}
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Aktuell vermietet?</div>
+      <div class="toggle-group">
+        ${['Ja','Nein','Unbekannt'].map(v => `<button class="toggle-btn${D.vermietet===v?' active':''}" onclick="toggle('vermietet','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Was möchten Sie tun? <span>*</span></div>
+      <div class="toggle-group">
+        ${['Verkaufen','Selbst einziehen','Vermieten','Noch unentschlossen'].map(v => `<button class="toggle-btn${D.wunsch===v?' active':''}" onclick="toggle('wunsch','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    // Scanner für Erbschein
+    g.innerHTML += `<div class="span2">
+      <button class="scan-card" onclick="openScanner('erbschein','Erbschein scannen','Erbschein oder Testament fotografieren — KI extrahiert die Daten')" type="button">
+        <div class="scan-card-icon">📜</div>
+        <div>
+          <div class="scan-card-title">Erbschein scannen</div>
+          <div class="scan-card-sub">Optional — beschleunigt die Bearbeitung</div>
+        </div>
+      </button>
+      <div class="scan-result-bar" id="scanner-result"></div>
+    </div>`;
+  }
+  if (step === 2) {
+    heading(g, 'Erbschaft', 'Zeitdruck & Kosten', 'Diese Angaben helfen uns die Dringlichkeit einzuschätzen.');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Zeitdruck? <span>*</span></div>
+      <div class="toggle-group">
+        ${['Ja, dringend','Mittelfristig','Kein Zeitdruck'].map(v => `<button class="toggle-btn${D.zeitdruck===v?' active':''}" onclick="toggle('zeitdruck','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Laufende Kosten bekannt?</div>
+      <div class="toggle-group">
+        ${['Ja','Nein','Teilweise'].map(v => `<button class="toggle-btn${D.kosten===v?' active':''}" onclick="toggle('kosten','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Anmerkungen</div>
+      <textarea data-key="anmerkungen" placeholder="Besonderheiten der Erbsituation, offene Fragen…">${D.anmerkungen||''}</textarea>
+    </div>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   FLOWS — VERMIETEN
+═══════════════════════════════════════ */
+function renderVermieten(g) {
+  if (step === 0) {
+    heading(g, 'Vermieten', 'Kontakt & Objekt', 'Erzählen Sie uns von Ihrer Vermietungsabsicht.');
+    g.innerHTML += field('Vorname', 'vorname', 'Max', true) + field('Nachname', 'nachname', 'Mustermann', true);
+    g.innerHTML += fieldFull(fieldEmail('E-Mail', 'email', true));
+    g.innerHTML += fieldFull(fieldTel('Telefon', 'telefon', true));
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Objekttyp <span>*</span></div>
+      <div class="toggle-group">
+        ${['Wohnung','Haus','Gewerbe','Garage/Stellplatz'].map(v => `<button class="toggle-btn${D.objekttyp===v?' active':''}" onclick="toggle('objekttyp','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += fieldFull(`<div class="field-wrap"><div class="field-label">Adresse des Objekts <span>*</span></div><input type="text" data-key="objektadresse" placeholder="Straße, PLZ Ort" value="${D.objektadresse||''}"></div>`);
+  }
+  if (step === 1) {
+    heading(g, 'Vermieten', 'Details & Konditionen', 'Was sind Ihre Vorstellungen?');
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Wohnfläche (m²)</div>
+      <input type="number" data-key="wohnflaeche" placeholder="z.B. 75" value="${D.wohnflaeche||''}">
+    </div>`;
+    g.innerHTML += `<div class="field-wrap">
+      <div class="field-label">Kaltmiete-Vorstellung (€/Mo)</div>
+      <input type="number" data-key="kaltmiete" placeholder="z.B. 650" value="${D.kaltmiete||''}">
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Wann verfügbar?</div>
+      <div class="toggle-group">
+        ${['Sofort','In 1 Monat','In 3 Monaten','Noch offen'].map(v => `<button class="toggle-btn${D.verfuegbar===v?' active':''}" onclick="toggle('verfuegbar','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Mieter-Präferenz</div>
+      <div class="toggle-group">
+        ${['Keine Präferenz','Single','Pärchen','Familie','Keine Haustiere','Keine WG'].map(v => `<button class="toggle-btn${(D.mieter||[]).includes(v)?' active':''}" onclick="multiToggle('mieter','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+  if (step === 2) {
+    heading(g, 'Vermieten', 'Ihre Erwartungen', 'Fast fertig — noch ein paar Details.');
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Wie sorgfältig sollen Bewerber geprüft werden? <span>*</span></div>
+      <div class="toggle-group">
+        ${['Standardprüfung','Erweiterte Prüfung (SCHUFA + Einkommen)','Maximale Sorgfalt'].map(v => `<button class="toggle-btn${D.pruefung===v?' active':''}" onclick="toggle('pruefung','${v}',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+    g.innerHTML += `<div class="span2 field-wrap">
+      <div class="field-label">Anmerkungen</div>
+      <textarea data-key="anmerkungen" placeholder="Besonderheiten, Wünsche, Fragen…">${D.anmerkungen||''}</textarea>
+    </div>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   HELPERS — RENDER
+═══════════════════════════════════════ */
+function heading(g, eye, title, sub) {
+  g.innerHTML += `<div class="span2 step-heading">
+    <div class="step-eye">${eye}</div>
+    <div class="step-title">${title}</div>
+    ${sub ? `<div class="step-sub">${sub}</div>` : ''}
+  </div>`;
+}
+function field(label, key, ph, req=false) {
+  return `<div class="field-wrap">
+    <div class="field-label">${label}${req?'<span>*</span>':''}</div>
+    <input type="text" data-key="${key}" placeholder="${ph}" value="${D[key]||''}">
+  </div>`;
+}
+function fieldFull(inner) { return `<div class="span2">${inner}</div>`; }
+function fieldEmail(label, key, req=false) {
+  return `<div class="field-wrap">
+    <div class="field-label">${label}${req?'<span>*</span>':''}</div>
+    <input type="email" data-key="${key}" placeholder="max@beispiel.de" value="${D[key]||''}">
+  </div>`;
+}
+function fieldTel(label, key, req=false) {
+  return `<div class="field-wrap">
+    <div class="field-label">${label}${req?'<span>*</span>':''}</div>
+    <input type="tel" data-key="${key}" placeholder="+49 157 …" value="${D[key]||''}">
+  </div>`;
+}
+function sel(key, options) {
+  return `<select data-key="${key}">
+    <option value="">— bitte wählen —</option>
+    ${options.map(o => `<option value="${o}"${D[key]===o?' selected':''}>${o}</option>`).join('')}
+  </select>`;
+}
+function toggle(key, val, btn) {
+  D[key] = val;
+  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function multiToggle(key, val, btn) {
+  if (!D[key]) D[key] = [];
+  const idx = D[key].indexOf(val);
+  if (idx > -1) { D[key].splice(idx,1); btn.classList.remove('active'); }
+  else          { D[key].push(val);     btn.classList.add('active'); }
+}
+function formatEur(n) {
+  return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+}
+function bindInputs() {
+  document.querySelectorAll('[data-key]').forEach(el => {
+    el.addEventListener('input', () => { D[el.dataset.key] = el.value; });
+    el.addEventListener('change', () => { D[el.dataset.key] = el.value; });
+  });
+}
+
+/* ═══════════════════════════════════════
+   VALIDATION
+═══════════════════════════════════════ */
+const REQUIRED = {
+  kaufen:    [
+    ['vorname','nachname','email','telefon','objekttyp'],
+    ['finanzierung'],
+    ['zeitrahmen'],
+  ],
+  verkaufen: [
+    ['vorname','nachname','email','telefon','objekttyp','objektadresse'],
+    ['verkaufgrund'],
+    ['zeitrahmen'],
+  ],
+  erben:     [
+    ['vorname','nachname','email','telefon','erbsituation','objekttyp'],
+    ['wunsch'],
+    ['zeitdruck'],
+  ],
+  vermieten: [
+    ['vorname','nachname','email','telefon','objekttyp','objektadresse'],
+    [],
+    ['pruefung'],
+  ],
+};
+
+function validate() {
+  const keys = REQUIRED[flow][step] || [];
+  for (const k of keys) {
+    if (!D[k]) { showErr(`Bitte füllen Sie alle Pflichtfelder aus.`); return false; }
+  }
+  if (D.email && !D.email.includes('@')) { showErr('Bitte gültige E-Mail eingeben.'); return false; }
+  hideErr(); return true;
+}
+function showErr(msg) {
+  const el = document.getElementById('val-error');
+  if (el) { el.textContent = msg; el.classList.add('show'); }
+}
+function hideErr() {
+  const el = document.getElementById('val-error');
+  if (el) el.classList.remove('show');
+}
+
+/* ═══════════════════════════════════════
+   PRIORITY SCORING
+═══════════════════════════════════════ */
+function calcPriority() {
+  if (flow === 'kaufen') {
+    const budget = D.budget || 0;
+    const hot = budget >= 150000 && D.finanzierung !== 'Noch nicht begonnen' && D.zeitrahmen === 'Sofort';
+    const warm = budget >= 100000 || D.finanzierung === 'Finanzierung steht';
+    return hot ? 'heiss' : warm ? 'warm' : 'kalt';
+  }
+  if (flow === 'verkaufen') {
+    const dringend = ['Scheidung','Finanzielle Gründe','Erbschaft'].includes(D.verkaufgrund);
+    const schnell  = D.zeitrahmen === 'So schnell wie möglich';
+    return (dringend || schnell) ? 'heiss' : 'warm';
+  }
+  if (flow === 'erben') {
+    return D.zeitdruck === 'Ja, dringend' ? 'heiss' : 'warm';
+  }
+  if (flow === 'vermieten') {
+    return D.verfuegbar === 'Sofort' ? 'heiss' : 'warm';
+  }
+  return 'warm';
+}
+
+const PRIORITY_LABELS = {
+  heiss: { emoji: '🔥', label: 'Heißer Lead',   text: 'Hohe Priorität — zeitnah kontaktieren' },
+  warm:  { emoji: '⭐', label: 'Warmer Lead',    text: 'Gutes Potenzial — Kontakt empfohlen' },
+  kalt:  { emoji: '❄️', label: 'Kalter Lead',    text: 'Noch nicht entscheidungsbereit' },
+};
+
+/* ═══════════════════════════════════════
+   SUBMIT
+═══════════════════════════════════════ */
+async function submit() {
+  const priority = calcPriority();
+  const p = PRIORITY_LABELS[priority];
+  const name = `${D.vorname||''} ${D.nachname||''}`.trim();
+  const flowLabel = FLOWS[flow].label;
+
+  setStatus('Anfrage wird übermittelt …');
+  document.querySelector('.btn-primary').disabled = true;
+
+  // ── Propstack Kontakt anlegen ──────────────
+  let contactId = null;
+  try {
+    const r = await fetch(CFG.PROPSTACK_API + '/contacts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client: {
+        first_name: D.vorname || '',
+        last_name:  D.nachname || '',
+        email:      D.email || '',
+        phone:      D.telefon || '',
+        description: buildNote(priority, p),
+      }})
+    });
+    const j = await r.json();
+    contactId = j.id || j.client?.id || null;
+  } catch(e) {
+    console.warn('Propstack:', e.message);
+  }
+
+  // ── Done Screen ────────────────────────────
+  showDone(priority, p, name, flowLabel);
+  setStatus('');
+}
+
+function buildNote(priority, p) {
+  const lines = [
+    `=== ${FLOWS[flow].label.toUpperCase()} — ${p.emoji} ${p.label.toUpperCase()} ===`,
+    `Eingang: ${new Date().toLocaleDateString('de-DE')} ${new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`,
+    '',
+  ];
+  Object.entries(D).forEach(([k,v]) => {
+    if (['flow'].includes(k)) return;
+    if (Array.isArray(v)) lines.push(`${k}: ${v.join(', ')}`);
+    else if (v) lines.push(`${k}: ${v}`);
+  });
+  return lines.join('\n');
+}
+
+function showDone(priority, p, name, flowLabel) {
+  document.getElementById('flow-screen').style.display = 'none';
+  const done = document.getElementById('done-screen');
+  done.classList.add('show');
+
+  document.getElementById('done-title').textContent = `${flowLabel} eingegangen`;
+
+  document.getElementById('done-priority').innerHTML = `
+    <span class="priority-badge ${priority}">${p.emoji} ${p.label}</span>
+    <div style="font-size:12px;color:var(--g600);margin-top:8px">${p.text}</div>`;
+
+  // Summary
+  const summaryFields = buildSummaryFields();
+  document.getElementById('done-summary').innerHTML = `
+    <div class="done-summary-title">Ihre Angaben im Überblick</div>
+    ${summaryFields.map(([l,v]) => `<div class="done-row"><div class="done-row-lbl">${l}</div><div class="done-row-val">${v}</div></div>`).join('')}
+  `;
+
+  // WhatsApp Link für Lukas
+  const waText = buildWAText(priority, p, name, flowLabel);
+  document.getElementById('done-wa').href = `https://wa.me/${CFG.WA_NUMBER}?text=${encodeURIComponent(waText)}`;
+}
+
+function buildSummaryFields() {
+  const MAP = {
+    vorname:'Vorname', nachname:'Nachname', email:'E-Mail', telefon:'Telefon',
+    objekttyp:'Objekttyp', objektadresse:'Adresse', budget:'Budget',
+    eigenkapital:'Eigenkapital', finanzierung:'Finanzierung', zeitrahmen:'Zeitrahmen',
+    groesse:'Größe', zimmer:'Zimmer', baujahr:'Baujahr', zustand:'Zustand',
+    preisvorstellung:'Preisvorstellung', verkaufgrund:'Verkaufsgrund',
+    erbsituation:'Erbsituation', wunsch:'Wunsch', zeitdruck:'Zeitdruck',
+    wohnflaeche:'Wohnfläche (m²)', kaltmiete:'Kaltmiete/Mo',
+    pruefung:'Mieterprüfung', verfuegbar:'Verfügbar',
+  };
+  return Object.entries(MAP)
+    .filter(([k]) => D[k])
+    .map(([k,l]) => {
+      let v = D[k];
+      if (k === 'budget' || k === 'eigenkapital') v = formatEur(+v);
+      if (k === 'kaltmiete') v = formatEur(+v) + '/Mo';
+      if (k === 'wohnflaeche') v = v + ' m²';
+      return [l, v];
+    });
+}
+
+function buildWAText(priority, p, name, flowLabel) {
+  return `${p.emoji} *Neue ${flowLabel}*\n\n*Priorität: ${p.label}*\n${p.text}\n\n*Kontakt:*\n${name}\n${D.email||''} | ${D.telefon||''}\n\n*Details:*\n${buildSummaryFields().map(([l,v])=>`${l}: ${v}`).join('\n')}\n\n_Automatisch erfasst über schiwig-immobilien.de_`;
+}
+
+function setStatus(msg, type='') {
+  const el = document.getElementById('status-bar');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'status-bar' + (type ? ' ' + type : '');
+}
+
+/* ═══════════════════════════════════════
+   KI SCANNER
+═══════════════════════════════════════ */
+let currentScanContext = '';
+
+function openScanner(ctx, title, desc) {
+  currentScanContext = ctx;
+  document.getElementById('scan-ov-desc').innerHTML = `
+    Halten Sie <strong>${title.replace(' scannen','')}</strong> gut lesbar vor die Kamera.<br><br>
+    ${desc}.<br><br>
+    <span style="font-size:11px;opacity:.5;">Das Foto wird nur zur Analyse übertragen. <a href="datenschutz.html" target="_blank" style="color:var(--gold)">Datenschutz</a></span>`;
+  document.getElementById('scanOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeScanner() {
+  document.getElementById('scanOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleScanCapture(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('scan-ov-status');
+  statusEl.textContent = '⏳ KI analysiert Dokument …';
+  scanDocument(file, currentScanContext, (success, count) => {
+    statusEl.textContent = success && count > 0
+      ? `✓ ${count} Felder automatisch ausgefüllt`
+      : success ? '⚠ Keine Felder erkannt' : '⚠ Analyse fehlgeschlagen';
+    setTimeout(() => closeScanner(), 1800);
+  });
+}
+
+async function scanDocument(file, ctx, onDone) {
+  const prompts = {
+    gehaltszettel: `Analysiere diesen Gehaltsnachweis. Antworte NUR mit JSON, ohne Markdown:\n{"name_vorname":"Nachname, Vorname","beruf":"","arbeitgeber":"","nettoeinkommen":"","adresse":""}`,
+    grundbuch:     `Analysiere dieses Dokument (Grundbuchauszug/Energieausweis). Antworte NUR mit JSON, ohne Markdown:\n{"objektadresse":"Straße Nr, PLZ Ort","wohnflaeche":"","baujahr":"","eigentümer":""}`,
+    erbschein:     `Analysiere dieses Dokument (Erbschein/Testament). Antworte NUR mit JSON, ohne Markdown:\n{"erblasser":"","erben":"","objektadresse":"","erbanteil":""}`,
+  };
+  const prompt = prompts[ctx] || prompts.gehaltszettel;
+
+  try {
+    const b64  = await prepareImageForScan(file);
+    const r    = await fetch(CFG.WORKER + '/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 256,
+        messages: [{ role:'user', content:[
+          { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:b64 }},
+          { type:'text', text: prompt }
+        ]}]
+      })
+    });
+    if (!r.ok) throw new Error('API ' + r.status);
+    const j    = await r.json();
+    const txt  = j.content?.[0]?.text || '{}';
+    const clean= txt.replace(/```[\s\S]*?```/g, m => m.replace(/```\w*\n?/g,'')).replace(/```/g,'').trim();
+    const data = JSON.parse(clean);
+
+    let filled = 0;
+    Object.entries(data).forEach(([k,v]) => {
+      if (v) { D[k] = v; filled++; }
+    });
+
+    // Nettoeinkommen als Zahl
+    if (D.nettoeinkommen) D.nettoeinkommen = parseFloat(String(D.nettoeinkommen).replace(/[^\d,\.]/g,'').replace(',','.')) || D.nettoeinkommen;
+
+    render();
+    const el = document.getElementById('scanner-result');
+    if (el) { el.style.display=''; el.innerHTML = filled ? `✓ ${filled} Felder erkannt` : '⚠ Keine Felder erkannt'; }
+    if (onDone) onDone(true, filled);
+  } catch(e) {
+    render();
+    const el = document.getElementById('scanner-result');
+    if (el) { el.style.display=''; el.innerHTML = '⚠ Analyse nicht verfügbar'; }
+    if (onDone) onDone(false, 0);
+  }
+}
+
+function prepareImageForScan(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 900;
+      let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+      if (w > MAX || h > MAX) {
+        if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+        else        { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL('image/jpeg', 0.88).split(',')[1]);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+</script>
+</body>
+</html>
