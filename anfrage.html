@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:    #0A0A0A;
@@ -263,16 +263,22 @@ input[type=range]:focus { border: none; outline: none; }
 
 /* ─── SCANNER CARD ──────────────────────── */
 .scan-card {
-  display: none;
+  display: flex;
   align-items: center; gap: 16px;
   background: var(--black); color: var(--white);
   border: 1px solid rgba(201,169,110,.2);
   border-radius: var(--rad); padding: 16px 20px;
   cursor: pointer; width: 100%; text-align: left;
   transition: opacity .2s;
+  position: relative; overflow: hidden;
+}
+/* Desktop: direkt Datei-Upload ohne Overlay */
+.scan-card .desktop-file {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 100px;
 }
 @media (max-width: 768px) {
-  .scan-card { display: flex; }
+  /* Mobile: Overlay öffnen, kein direktes Input */
+  .scan-card .desktop-file { display: none; }
 }
 .scan-card:active { opacity: .8; }
 .scan-card-icon {
@@ -528,7 +534,7 @@ input[type=range]:focus { border: none; outline: none; }
     </div>
     <button class="scan-ov-btn" type="button">
       📸 &nbsp;Jetzt fotografieren
-      <input type="file" accept="image/*" capture="environment" onchange="handleScanCapture(this)">
+      <input type="file" accept="image/*" id="scan-ov-input" onchange="handleScanCapture(this)">
     </button>
     <div class="scan-ov-status" id="scan-ov-status"></div>
   </div>
@@ -682,12 +688,13 @@ function renderKaufen(g) {
     </div>`;
     // Mobile: Gehaltszettel scannen
     g.innerHTML += `<div class="span2">
-      <button class="scan-card" onclick="openScanner('gehaltszettel','Gehaltsnachweis scannen','Gehaltszettel für automatische Bonitätsprüfung fotografieren')" type="button">
+      <button class="scan-card" onclick="handleScanCardClick(event,'gehaltszettel','Gehaltsnachweis','Gehaltszettel fotografieren')" type="button">
         <div class="scan-card-icon">📸</div>
         <div>
           <div class="scan-card-title">Gehaltsnachweis scannen</div>
-          <div class="scan-card-sub">KI prüft Ihre Bonität automatisch</div>
+          <div class="scan-card-sub">Foto oder Datei hochladen — KI füllt Felder automatisch</div>
         </div>
+        <input type="file" accept="image/*" class="desktop-file" onchange="handleDesktopScan(this,'gehaltszettel')">
       </button>
       <div class="scan-result-bar" id="scanner-result"></div>
     </div>`;
@@ -758,12 +765,13 @@ function renderVerkaufen(g) {
     </div>`;
     // Scanner für Grundbuchauszug
     g.innerHTML += `<div class="span2">
-      <button class="scan-card" onclick="openScanner('grundbuch','Grundbuchauszug scannen','Grundbuchauszug oder Baupläne fotografieren')" type="button">
+      <button class="scan-card" onclick="handleScanCardClick(event,'grundbuch','Grundbuchauszug','Grundbuchauszug oder Energieausweis hochladen')" type="button">
         <div class="scan-card-icon">📋</div>
         <div>
-          <div class="scan-card-title">Unterlagen scannen</div>
-          <div class="scan-card-sub">Grundbuchauszug oder Energieausweis</div>
+          <div class="scan-card-title">Unterlagen hochladen</div>
+          <div class="scan-card-sub">Grundbuchauszug oder Energieausweis — KI liest automatisch</div>
         </div>
+        <input type="file" accept="image/*,application/pdf" class="desktop-file" onchange="handleDesktopScan(this,'grundbuch')">
       </button>
       <div class="scan-result-bar" id="scanner-result"></div>
     </div>`;
@@ -832,12 +840,13 @@ function renderErben(g) {
     </div>`;
     // Scanner für Erbschein
     g.innerHTML += `<div class="span2">
-      <button class="scan-card" onclick="openScanner('erbschein','Erbschein scannen','Erbschein oder Testament fotografieren — KI extrahiert die Daten')" type="button">
+      <button class="scan-card" onclick="handleScanCardClick(event,'erbschein','Erbschein','Erbschein oder Testament hochladen')" type="button">
         <div class="scan-card-icon">📜</div>
         <div>
-          <div class="scan-card-title">Erbschein scannen</div>
-          <div class="scan-card-sub">Optional — beschleunigt die Bearbeitung</div>
+          <div class="scan-card-title">Erbschein hochladen</div>
+          <div class="scan-card-sub">Optional — KI extrahiert alle relevanten Daten</div>
         </div>
+        <input type="file" accept="image/*" class="desktop-file" onchange="handleDesktopScan(this,'erbschein')">
       </button>
       <div class="scan-result-bar" id="scanner-result"></div>
     </div>`;
@@ -1158,6 +1167,38 @@ function setStatus(msg, type='') {
    KI SCANNER
 ═══════════════════════════════════════ */
 let currentScanContext = '';
+const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+// Desktop: Input übernimmt direkt — kein Overlay nötig
+// Mobile: Overlay mit Kamera öffnen
+function handleScanCardClick(e, ctx, title, desc) {
+  if (!isMobile()) return; // Desktop: native file input übernimmt den Click
+  e.preventDefault();
+  openScanner(ctx, title, desc);
+}
+
+// Desktop: Datei direkt aus Input verarbeiten
+function handleDesktopScan(input, ctx) {
+  const file = input.files[0];
+  if (!file) return;
+  const resultEl = document.getElementById('scanner-result');
+  if (resultEl) { resultEl.style.display = ''; resultEl.innerHTML = '⏳ KI analysiert …'; }
+  scanDocument(file, ctx, (success, count) => {
+    if (resultEl) {
+      resultEl.innerHTML = success && count > 0
+        ? `✓ ${count} Felder erkannt und ausgefüllt`
+        : success ? '⚠ Keine Felder erkannt' : '⚠ Analyse fehlgeschlagen';
+    }
+  });
+}
+
+// capture="environment" nur auf Mobile setzen
+document.addEventListener('DOMContentLoaded', () => {
+  if (isMobile()) {
+    const inp = document.getElementById('scan-ov-input');
+    if (inp) inp.setAttribute('capture', 'environment');
+  }
+});
 
 function openScanner(ctx, title, desc) {
   currentScanContext = ctx;
